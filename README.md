@@ -66,6 +66,36 @@ docker-compose up -d
 
 ![클래스 다이어그램](docs/image/class_diagram.png)
 
+## 시퀀스 다이어그램
+
+### 잔액 충전 기능
+사용자가 잔액을 충전하는 기능에 대한 시퀀스 다이어그램입니다.
+![잔액충전 시퀀스다이어그램](docs/image/seq_charge.png)
+### 잔액 조회 기능
+사용자가 잔액을 조회하는 기능에 대한 시퀀스 다이어그램입니다.
+![잔액조회 시퀀스다이어그램](docs/image/seq_getAmount.png)
+### 상품 리스트 조회 기능
+사용자가 상품 리스트를 조회하는 기능에 대한 시퀀스 다이어그램입니다.
+![seq_listProduct.png](docs/image/seq_listProduct.png)
+### 상품 단건 조회 기능
+사용자가 상품 단건 정보를 조회하는 기능에 대한 시퀀스 다이어그램입니다.
+![seq_getProduct.png](docs/image/seq_getProduct.png)
+### 선착순 쿠폰 발급 기능
+사용자가 선착순 쿠폰을 발급하는 기능에 대한 시퀀스 다이어그램입니다.
+![seq_getCoupon.png](docs/image/seq_getCoupon.png)
+### 보유 쿠폰 조회 기능
+사용자가 보유 쿠폰을 조회하는 기능에 대한 시퀀스 다이어그램입니다.
+![seq_listCoupon.png](docs/image/seq_listCoupon.png)
+### 주문 & 결제 기능
+사용자가 상품을 주문하고 결제하는 기능에 대한 시퀀스 다이어그램입니다.
+![seq_order_pay.png](docs/image/seq_order_pay.png)
+### 인기 판매 상품 조회 기능
+사용자가 인기 판매 상품을 조회하는 기능에 대한 시퀀스 다이어그램입니다.
+![seq_listRankProduct.png](docs/image/seq_listRankProduct.png)
+### 주문 통계 생성 기능
+당일 주문 내역을 통계로 생성해주는 기능에 대한 시퀀스 다이어그램입니다.
+![seq_orderStatistics.png](docs/image/seq_orderStatistics.png)
+
 ## ERD
 ![entity_relation_diagram.png](docs/image/entity_relation_diagram.png)
 
