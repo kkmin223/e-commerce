@@ -22,4 +22,9 @@ public class ProductController implements ProductApi {
     public ResponseEntity<ProductResponseDto> getProduct(Long id) {
         return ResponseEntity.ok(new ProductResponseDto(1L, "상품", 10000, 10));
     }
+
+    @Override
+    public ResponseEntity<List<ProductResponseDto>> listPopularProduct() {
+        return ResponseEntity.ok(List.of(new ProductResponseDto(1L, "상품", 10000, 10)));
+    }
 }

@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 @Tag(
-    name = "Product API",
+    name = "PRODUCT API",
     description = "상품 관련 API입니다.")
 @RequestMapping("/products")
 public interface ProductApi {
@@ -88,4 +88,26 @@ public interface ProductApi {
             example = "1"
         )
         @PathVariable @Min(value = 1, message = "상품 식별자가 유효하지 않습니다.") Long id);
+
+    @Operation(
+        summary = "인기 상품 리스트 조회",
+        description = "판매량 상위 5개의 상품을 조회합니다."
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "인기 상품 리스트 조회",
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = ProductResponseDto.class)))
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "서버 오류",
+            content = @Content(
+                schema = @Schema(implementation = ErrorResponse.class),
+                mediaType = "application/json"
+            )
+        )
+    })
+    @GetMapping("/popular")
+    ResponseEntity<List<ProductResponseDto>> listPopularProduct();
 }
