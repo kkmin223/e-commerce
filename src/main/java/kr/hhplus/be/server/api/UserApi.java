@@ -65,7 +65,7 @@ public interface UserApi {
             description = "사용자 고유 ID",
             example = "1"
         )
-        @PathVariable @Min(1) Long id);
+        @PathVariable @Min(value = 1, message = "사용자 식별자가 유효하지 않습니다.") Long id);
 
     @Operation(
         summary = "사용자 잔액 충전",
@@ -111,7 +111,7 @@ public interface UserApi {
             description = "사용자 고유 ID",
             example = "1"
         )
-        @PathVariable @Min(1) Long id,
+        @PathVariable @Min(value = 1, message = "사용자 식별자가 유효하지 않습니다.") Long id,
         @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
             content = @Content(
