@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 public class CouponController implements CouponApi {
     @Override
-    public ResponseEntity<CouponResponseDto> issueCoupon(Long id, CouponIssueRequestDto couponIssueRequestDto) {
+    public ResponseEntity<CouponResponseDto> issueCoupon(long id, CouponIssueRequestDto couponIssueRequestDto) {
         return ResponseEntity.ok(new CouponResponseDto(1L, "쿠폰1", true, 1000, CouponType.AMOUNT));
     }
 }

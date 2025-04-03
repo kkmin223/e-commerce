@@ -19,5 +19,5 @@ public class CouponIssueRequestDto {
         example = "1"
     )
     @Min(value = 1, message = "사용자 식별자가 유효하지 않습니다.")
-    private Long userId;
+    private long userId;
 }

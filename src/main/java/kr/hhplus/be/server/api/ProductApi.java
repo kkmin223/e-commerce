@@ -87,7 +87,7 @@ public interface ProductApi {
             description = "상품 고유 ID",
             example = "1"
         )
-        @PathVariable @Min(value = 1, message = "상품 식별자가 유효하지 않습니다.") Long id);
+        @PathVariable @Min(value = 1, message = "상품 식별자가 유효하지 않습니다.") long id);
 
     @Operation(
         summary = "인기 상품 리스트 조회",

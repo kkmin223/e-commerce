@@ -20,12 +20,12 @@ public class OrderRequestDto {
         example = "1"
     )
     @Min(value = 1, message = "유저 식별자가 유효하지 않습니다.")
-    private Long userId;
+    private long userId;
     @Schema(
         description = "쿠폰 아이템 식별자",
         example = "1"
     )
-    private Long couponItemId;
+    private long couponItemId;
     @Schema(
         description = "주문 상품 목록"
     )

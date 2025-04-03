@@ -14,7 +14,7 @@ public class ProductResponseDto {
         description = "상품 고유번호",
         example = "1"
     )
-    private Long id;
+    private long id;
     @Schema(
         description = "상품명",
         example = "상품1"
@@ -24,10 +24,10 @@ public class ProductResponseDto {
         description = "상품 가격",
         example = "10000"
     )
-    private Integer price;
+    private int price;
     @Schema(
         description = "상품 수량",
         example = "10"
     )
-    private Integer quantity;
+    private int quantity;
 }

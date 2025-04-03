@@ -14,10 +14,10 @@ public class AmountResponseDto {
         description = "사용자 식별자",
         example = "1"
     )
-    private Long userId;
+    private long userId;
     @Schema(
         description = "사용자 현재 잔액",
         example = "5000"
     )
-    private Integer amount;
+    private int amount;
 }

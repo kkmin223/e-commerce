@@ -17,17 +17,17 @@ public class OrderResponseDto {
         description = "주문 고유번호",
         example = "1"
     )
-    private Long orderId;
+    private long orderId;
     @Schema(
         description = "주문 총 금액",
         example = "10000"
     )
-    private Integer totalAmount;
+    private int totalAmount;
     @Schema(
         description = "최종 결제 금액",
         example = "5000"
     )
-    private Integer paymentAmount;
+    private int paymentAmount;
     @Schema(
         description = "주문 시간",
         example = "2025-04-04 10:00"

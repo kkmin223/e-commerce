@@ -1,5 +1,7 @@
 package kr.hhplus.be.server.controller;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import kr.hhplus.be.server.api.UserApi;
 import kr.hhplus.be.server.domain.coupon.CouponType;
 import kr.hhplus.be.server.dto.AmountResponseDto;
@@ -17,17 +19,19 @@ import java.util.List;
 @Validated
 public class UserController implements UserApi {
     @Override
-    public ResponseEntity<AmountResponseDto> getUserAmount(Long id) {
+    public ResponseEntity<AmountResponseDto> getUserAmount(long id) {
         return ResponseEntity.ok(new AmountResponseDto(id, 5000));
     }
 
     @Override
-    public ResponseEntity<AmountResponseDto> chargeUserAmount(Long id, ChargeRequestDto chargeRequestDto) {
+    public ResponseEntity<AmountResponseDto> chargeUserAmount(
+        @Min(value = 1, message = "사용자 식별자가 유효하지 않습니다.") long id,
+        @Valid ChargeRequestDto chargeRequestDto) {
         return ResponseEntity.ok(new AmountResponseDto(id, 5000));
     }
 
     @Override
-    public ResponseEntity<List<CouponResponseDto>> getUserCoupons(Long id) {
+    public ResponseEntity<List<CouponResponseDto>> getUserCoupons(long id) {
         return ResponseEntity.ok(List.of(new CouponResponseDto(1L, "쿠폰1", true, 1000, CouponType.AMOUNT)));
     }
 }

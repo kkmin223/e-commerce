@@ -66,7 +66,7 @@ public interface CouponApi {
             example = "1"
         )
         @PathVariable
-        @Min(value = 1, message = "쿠폰 식별자가 유효하지 않습니다.") Long id,
+        @Min(value = 1, message = "쿠폰 식별자가 유효하지 않습니다.") long id,
         @io.swagger.v3.oas.annotations.parameters.RequestBody(
             required = true,
             content = @Content(

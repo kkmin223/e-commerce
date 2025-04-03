@@ -19,7 +19,7 @@ public class ProductController implements ProductApi {
     }
 
     @Override
-    public ResponseEntity<ProductResponseDto> getProduct(Long id) {
+    public ResponseEntity<ProductResponseDto> getProduct(long id) {
         return ResponseEntity.ok(new ProductResponseDto(1L, "상품", 10000, 10));
     }
 

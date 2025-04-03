@@ -17,7 +17,7 @@ public class CouponResponseDto {
         description = "쿠폰 아이템 고유번호",
         example = "1"
     )
-    private Long id;
+    private long id;
     @Schema(
         description = "쿠폰명",
         example = "쿠폰1"
@@ -32,7 +32,7 @@ public class CouponResponseDto {
         description = "쿠폰 할인 값",
         example = "1000"
     )
-    private Integer discountValue;
+    private int discountValue;
     @Schema(
         description = "쿠폰 타입",
         example = "AMOUNT"
