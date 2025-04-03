@@ -2,59 +2,37 @@ package kr.hhplus.be.server.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import kr.hhplus.be.server.dto.ErrorResponse;
-import kr.hhplus.be.server.dto.ProductResponseDto;
+import kr.hhplus.be.server.dto.*;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.List;
-
 @Tag(
-    name = "Product API",
-    description = "상품 관련 API입니다.")
-@RequestMapping("/products")
-public interface ProductApi {
+    name = "COUPON API",
+    description = "쿠폰 관련 API입니다.")
+@RequestMapping("/coupons")
+public interface CouponApi {
 
     @Operation(
-        summary = "상품 리스트 조회",
-        description = "등록된 상품 리스트를 조회합니다."
+        summary = "선착순 쿠폰 발급",
+        description = "선착순 쿠폰 발급을 요청합니다."
     )
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "상품 리스트 조회 성공",
-            content = @Content(array = @ArraySchema(schema = @Schema(implementation = ProductResponseDto.class)))
-        ),
-        @ApiResponse(
-            responseCode = "500",
-            description = "서버 오류",
+            description = "쿠폰 발급 성공",
             content = @Content(
-                schema = @Schema(implementation = ErrorResponse.class),
+                schema = @Schema(implementation = CouponResponseDto.class),
                 mediaType = "application/json"
             )
-        )
-    })
-    @GetMapping()
-    ResponseEntity<List<ProductResponseDto>> listProduct();
-
-    @Operation(
-        summary = "상품 단건 조회",
-        description = "특정 상품을 조회합니다."
-    )
-    @ApiResponses({
-        @ApiResponse(
-            responseCode = "200",
-            description = "상품 단건 조회 성공",
-            content = @Content(schema = @Schema(implementation = ProductResponseDto.class))
         ),
         @ApiResponse(
             responseCode = "400",
@@ -81,11 +59,21 @@ public interface ProductApi {
             )
         )
     })
-    @GetMapping("/{id}")
-    ResponseEntity<ProductResponseDto> getProduct(
+    @PostMapping("/{id}/issue")
+    ResponseEntity<CouponResponseDto> issueCoupon(
         @Parameter(
-            description = "상품 고유 ID",
+            description = "쿠폰 식별자",
             example = "1"
         )
-        @PathVariable @Min(value = 1, message = "상품 식별자가 유효하지 않습니다.") Long id);
+        @PathVariable
+        @Min(value = 1, message = "쿠폰 식별자가 유효하지 않습니다.") Long id,
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            required = true,
+            content = @Content(
+                mediaType = "application/json",
+                schema = @Schema(implementation = CouponIssueRequestDto.class)
+            )
+        )
+        @Valid
+        CouponIssueRequestDto couponIssueRequestDto);
 }
