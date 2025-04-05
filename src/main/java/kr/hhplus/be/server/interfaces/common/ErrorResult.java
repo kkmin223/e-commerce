@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.dto;
+package kr.hhplus.be.server.interfaces.common;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Schema(
     description = "에러 응답 DTO"
 )
-public class ErrorResponse {
+public class ErrorResult {
     @Schema(description = "에러 코드")
     String code;
     @Schema(description = "에러 메세지")

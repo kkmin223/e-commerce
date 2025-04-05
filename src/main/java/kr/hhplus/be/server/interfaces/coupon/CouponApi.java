@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.api;
+package kr.hhplus.be.server.interfaces.coupon;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -9,16 +9,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import kr.hhplus.be.server.dto.*;
+import kr.hhplus.be.server.interfaces.common.ApiResult;
+import kr.hhplus.be.server.interfaces.common.ErrorResult;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 @Tag(
     name = "COUPON API",
     description = "쿠폰 관련 API입니다.")
-@RequestMapping("/coupons")
 public interface CouponApi {
 
     @Operation(
@@ -29,16 +27,13 @@ public interface CouponApi {
         @ApiResponse(
             responseCode = "200",
             description = "쿠폰 발급 성공",
-            content = @Content(
-                schema = @Schema(implementation = CouponResponseDto.class),
-                mediaType = "application/json"
-            )
+            useReturnTypeSchema = true
         ),
         @ApiResponse(
             responseCode = "400",
             description = "Request 유효성 에러",
             content = @Content(
-                schema = @Schema(implementation = ErrorResponse.class),
+                schema = @Schema(implementation = ErrorResult.class),
                 mediaType = "application/json"
             )
         ),
@@ -46,7 +41,7 @@ public interface CouponApi {
             responseCode = "404",
             description = "존재하지 않는 리소스 접근",
             content = @Content(
-                schema = @Schema(implementation = ErrorResponse.class),
+                schema = @Schema(implementation = ErrorResult.class),
                 mediaType = "application/json"
             )
         ),
@@ -54,26 +49,18 @@ public interface CouponApi {
             responseCode = "500",
             description = "서버 오류",
             content = @Content(
-                schema = @Schema(implementation = ErrorResponse.class),
+                schema = @Schema(implementation = ErrorResult.class),
                 mediaType = "application/json"
             )
         )
     })
-    @PostMapping("/{id}/issue")
-    ResponseEntity<CouponResponseDto> issueCoupon(
+    ResponseEntity<ApiResult<CouponResponse.Coupon>> issueCoupon(
         @Parameter(
             description = "쿠폰 식별자",
             example = "1"
         )
         @PathVariable
         @Min(value = 1, message = "쿠폰 식별자가 유효하지 않습니다.") long id,
-        @io.swagger.v3.oas.annotations.parameters.RequestBody(
-            required = true,
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = CouponIssueRequestDto.class)
-            )
-        )
         @Valid
-        CouponIssueRequestDto couponIssueRequestDto);
+        CouponRequest.Issue couponIssueRequest);
 }

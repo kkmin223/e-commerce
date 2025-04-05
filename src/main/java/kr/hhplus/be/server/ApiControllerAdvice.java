@@ -1,7 +1,7 @@
 package kr.hhplus.be.server;
 
 import jakarta.validation.ConstraintViolationException;
-import kr.hhplus.be.server.dto.ErrorResponse;
+import kr.hhplus.be.server.interfaces.common.ErrorResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -17,7 +17,7 @@ public class ApiControllerAdvice {
 
     // Request 유효성 에러
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
+    public ResponseEntity<ErrorResult> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         BindingResult bindingResult = e.getBindingResult();
 
         // field : message 형식으로 변환
@@ -25,26 +25,26 @@ public class ApiControllerAdvice {
             .map(fieldError -> fieldError.getField() + " : " + fieldError.getDefaultMessage())
             .collect(Collectors.joining(", "));
 
-        return ResponseEntity.status(400).body(new ErrorResponse("400", errorMessage));
+        return ResponseEntity.status(400).body(new ErrorResult("400", errorMessage));
     }
 
     // Request 유효성 에러
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException e) {
-        return ResponseEntity.status(400).body(new ErrorResponse("400", e.getMessage()));
+    public ResponseEntity<ErrorResult> handleConstraintViolationException(ConstraintViolationException e) {
+        return ResponseEntity.status(400).body(new ErrorResult("400", e.getMessage()));
     }
 
 
     // 존재하지 않는 리소스 접근
     @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleRuntimeException(IllegalArgumentException e) {
-        return ResponseEntity.status(500).body(new ErrorResponse("404", e.getMessage()));
+    public ResponseEntity<ErrorResult> handleRuntimeException(IllegalArgumentException e) {
+        return ResponseEntity.status(500).body(new ErrorResult("404", e.getMessage()));
     }
 
     // 서버 에러
     @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(Exception e) {
+    public ResponseEntity<ErrorResult> handleException(Exception e) {
         log.error(e.getMessage(), e);
-        return ResponseEntity.status(500).body(new ErrorResponse("500", "에러가 발생했습니다."));
+        return ResponseEntity.status(500).body(new ErrorResult("500", "에러가 발생했습니다."));
     }
 }

@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.api;
+package kr.hhplus.be.server.interfaces.order;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -7,17 +7,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import kr.hhplus.be.server.dto.ErrorResponse;
-import kr.hhplus.be.server.dto.OrderRequestDto;
-import kr.hhplus.be.server.dto.OrderResponseDto;
+import kr.hhplus.be.server.interfaces.common.ApiResult;
+import kr.hhplus.be.server.interfaces.common.ErrorResult;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 @Tag(
     name = "ORDER API",
     description = "주문 관련 API입니다.")
-@RequestMapping("/orders")
 public interface OrderApi {
 
     @Operation(
@@ -28,16 +24,13 @@ public interface OrderApi {
         @ApiResponse(
             responseCode = "200",
             description = "주문 성공",
-            content = @Content(
-                schema = @Schema(implementation = OrderResponseDto.class),
-                mediaType = "application/json"
-            )
+            useReturnTypeSchema = true
         ),
         @ApiResponse(
             responseCode = "400",
             description = "Request 유효성 에러",
             content = @Content(
-                schema = @Schema(implementation = ErrorResponse.class),
+                schema = @Schema(implementation = ErrorResult.class),
                 mediaType = "application/json"
             )
         ),
@@ -45,7 +38,7 @@ public interface OrderApi {
             responseCode = "404",
             description = "존재하지 않는 리소스 접근",
             content = @Content(
-                schema = @Schema(implementation = ErrorResponse.class),
+                schema = @Schema(implementation = ErrorResult.class),
                 mediaType = "application/json"
             )
         ),
@@ -53,21 +46,13 @@ public interface OrderApi {
             responseCode = "500",
             description = "서버 오류",
             content = @Content(
-                schema = @Schema(implementation = ErrorResponse.class),
+                schema = @Schema(implementation = ErrorResult.class),
                 mediaType = "application/json"
             )
         )
     })
-    @PostMapping()
-    ResponseEntity<OrderResponseDto> order(
-        @io.swagger.v3.oas.annotations.parameters.RequestBody(
-            required = true,
-            content = @Content(
-                mediaType = "application/json",
-                schema = @Schema(implementation = OrderRequestDto.class)
-            )
-        )
+    ResponseEntity<ApiResult<OrderResponse.Order>> order(
         @Valid
-        OrderRequestDto couponIssueRequestDto
+        OrderRequest.Order orderRequest
     );
 }

@@ -1,27 +1,23 @@
-package kr.hhplus.be.server.api;
+package kr.hhplus.be.server.interfaces.product;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
-import kr.hhplus.be.server.dto.ErrorResponse;
-import kr.hhplus.be.server.dto.ProductResponseDto;
+import kr.hhplus.be.server.interfaces.common.ApiResult;
+import kr.hhplus.be.server.interfaces.common.ErrorResult;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
 @Tag(
     name = "PRODUCT API",
     description = "상품 관련 API입니다.")
-@RequestMapping("/products")
 public interface ProductApi {
 
     @Operation(
@@ -32,19 +28,18 @@ public interface ProductApi {
         @ApiResponse(
             responseCode = "200",
             description = "상품 리스트 조회 성공",
-            content = @Content(array = @ArraySchema(schema = @Schema(implementation = ProductResponseDto.class)))
+            useReturnTypeSchema = true
         ),
         @ApiResponse(
             responseCode = "500",
             description = "서버 오류",
             content = @Content(
-                schema = @Schema(implementation = ErrorResponse.class),
+                schema = @Schema(implementation = ErrorResult.class),
                 mediaType = "application/json"
             )
         )
     })
-    @GetMapping()
-    ResponseEntity<List<ProductResponseDto>> listProduct();
+    ResponseEntity<ApiResult<List<ProductResponse.Product>>> listProduct();
 
     @Operation(
         summary = "상품 단건 조회",
@@ -54,13 +49,13 @@ public interface ProductApi {
         @ApiResponse(
             responseCode = "200",
             description = "상품 단건 조회 성공",
-            content = @Content(schema = @Schema(implementation = ProductResponseDto.class))
+            useReturnTypeSchema = true
         ),
         @ApiResponse(
             responseCode = "400",
             description = "Request 유효성 에러",
             content = @Content(
-                schema = @Schema(implementation = ErrorResponse.class),
+                schema = @Schema(implementation = ErrorResult.class),
                 mediaType = "application/json"
             )
         ),
@@ -68,7 +63,7 @@ public interface ProductApi {
             responseCode = "404",
             description = "존재하지 않는 리소스 접근",
             content = @Content(
-                schema = @Schema(implementation = ErrorResponse.class),
+                schema = @Schema(implementation = ErrorResult.class),
                 mediaType = "application/json"
             )
         ),
@@ -76,13 +71,12 @@ public interface ProductApi {
             responseCode = "500",
             description = "서버 오류",
             content = @Content(
-                schema = @Schema(implementation = ErrorResponse.class),
+                schema = @Schema(implementation = ErrorResult.class),
                 mediaType = "application/json"
             )
         )
     })
-    @GetMapping("/{id}")
-    ResponseEntity<ProductResponseDto> getProduct(
+    ResponseEntity<ApiResult<ProductResponse.Product>> getProduct(
         @Parameter(
             description = "상품 고유 ID",
             example = "1"
@@ -97,17 +91,16 @@ public interface ProductApi {
         @ApiResponse(
             responseCode = "200",
             description = "인기 상품 리스트 조회",
-            content = @Content(array = @ArraySchema(schema = @Schema(implementation = ProductResponseDto.class)))
+            useReturnTypeSchema = true
         ),
         @ApiResponse(
             responseCode = "500",
             description = "서버 오류",
             content = @Content(
-                schema = @Schema(implementation = ErrorResponse.class),
+                schema = @Schema(implementation = ErrorResult.class),
                 mediaType = "application/json"
             )
         )
     })
-    @GetMapping("/popular")
-    ResponseEntity<List<ProductResponseDto>> listPopularProduct();
+    ResponseEntity<ApiResult<List<ProductResponse.Product>>> listPopularProduct();
 }
