@@ -1,5 +1,8 @@
 package kr.hhplus.be.server.interfaces.user;
 
+import kr.hhplus.be.server.application.user.UserCriteria;
+import kr.hhplus.be.server.application.user.UserFacade;
+import kr.hhplus.be.server.application.user.UserResult;
 import kr.hhplus.be.server.domain.coupon.CouponType;
 import kr.hhplus.be.server.interfaces.common.ApiResult;
 import kr.hhplus.be.server.interfaces.common.SuccessCode;
@@ -19,6 +22,9 @@ import java.util.List;
 @Validated
 @RequestMapping("/users")
 public class UserController implements UserApi {
+
+    private final UserFacade userFacade;
+
     @Override
     @GetMapping("/{id}/amount")
     public ResponseEntity<ApiResult<UserResponse.UserAmount>> getUserAmount(long id) {
@@ -28,7 +34,10 @@ public class UserController implements UserApi {
     @Override
     @PostMapping("/{id}/amount/charge")
     public ResponseEntity<ApiResult<UserResponse.UserAmount>> chargeUserAmount(long id, UserRequest.Charge chargeRequestDto) {
-        return ResponseEntity.ok(ApiResult.of(SuccessCode.CHARGE_USER_AMOUNT, new UserResponse.UserAmount(id, 5000)));
+        UserCriteria.Charge chargeCriteria = new UserCriteria.Charge(id, chargeRequestDto.getAmount());
+        UserResult.UserAmount userAmount = userFacade.charge(chargeCriteria);
+
+        return ResponseEntity.ok(ApiResult.of(SuccessCode.CHARGE_USER_AMOUNT, new UserResponse.UserAmount(userAmount.getUserId(), userAmount.getAmount())));
     }
 
     @Override
