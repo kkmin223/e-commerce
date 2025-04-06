@@ -32,7 +32,7 @@ class UserServiceTest {
         Integer chargeAmount = 100;
         UserCommand.Charge chargeCommand = new UserCommand.Charge(userId, chargeAmount);
 
-        Mockito.when(userRepository.getUser(userId)).thenReturn(User.createdBy(userId, initialAmount));
+        Mockito.when(userRepository.getUser(userId)).thenReturn(User.of(userId, initialAmount));
 
         // when
         User user = userService.charge(chargeCommand);
@@ -51,7 +51,7 @@ class UserServiceTest {
         Integer initialAmount = 100;
         UserCommand.Charge chargeCommand = new UserCommand.Charge(userId, chargeAmount);
 
-        Mockito.when(userRepository.getUser(userId)).thenReturn(User.createdBy(userId, initialAmount));
+        Mockito.when(userRepository.getUser(userId)).thenReturn(User.of(userId, initialAmount));
         //when
         InvalidChargeAmountException exception = assertThrows(InvalidChargeAmountException.class, () -> userService.charge(chargeCommand));
 

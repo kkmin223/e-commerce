@@ -30,7 +30,7 @@ class UserFacadeTest {
         UserCriteria.Charge chargeCriteria = new UserCriteria.Charge(userId, chargeAmount);
 
         when(userService.charge(any(UserCommand.Charge.class)))
-            .thenReturn(User.createdBy(userId, chargeAmount));
+            .thenReturn(User.of(userId, chargeAmount));
 
         // when
         UserResult.UserAmount userAmount = userFacade.charge(chargeCriteria);

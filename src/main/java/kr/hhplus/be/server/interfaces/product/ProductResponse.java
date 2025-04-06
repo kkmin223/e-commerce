@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.interfaces.product;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import kr.hhplus.be.server.application.product.ProductResult;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,5 +34,8 @@ public class ProductResponse {
         )
         private int quantity;
 
+        public static Product created(ProductResult.Product product) {
+            return new Product(product.getId(), product.getName(), product.getPrice(), product.getQuantity());
+        }
     }
 }

@@ -14,7 +14,7 @@ public class User {
     private Long id;
     private Amount amount;
 
-    public static User createdBy(Long userId, Integer amount) {
+    public static User of(Long userId, Integer amount) {
         return new User(userId, Amount.of(amount));
     }
 

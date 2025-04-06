@@ -20,7 +20,7 @@ class UserTest {
         Integer amount = 100;
         Integer chargeAmount = 100;
 
-        User user = User.createdBy(userId, amount);
+        User user = User.of(userId, amount);
         // when
         user.chargeAmount(chargeAmount);
 
@@ -34,7 +34,7 @@ class UserTest {
         // given
         Long userId = 1L;
         Integer amount = 0;
-        User user = User.createdBy(userId, amount);
+        User user = User.of(userId, amount);
 
         // when
         InvalidChargeAmountException exception = Assertions.assertThrows(InvalidChargeAmountException.class, () -> user.chargeAmount(chargeAmount));
@@ -53,7 +53,7 @@ class UserTest {
         Integer amount = 500;
         Integer deductAmount = 100;
 
-        User user = User.createdBy(userId, amount);
+        User user = User.of(userId, amount);
         // when
         user.deductAmount(deductAmount);
 
@@ -67,7 +67,7 @@ class UserTest {
         // given
         Long userId = 1L;
         Integer amount = 0;
-        User user = User.createdBy(userId, amount);
+        User user = User.of(userId, amount);
 
         // when
         InvalidDeductAmountException exception = Assertions.assertThrows(InvalidDeductAmountException.class, () -> user.deductAmount(deductAmount));
