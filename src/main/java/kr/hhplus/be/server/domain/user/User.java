@@ -19,7 +19,7 @@ public class User {
     }
 
     public Integer getAmount() {
-        return amount.balance();
+        return amount.amount();
     }
 
     public void chargeAmount(Integer amount) {
@@ -37,6 +37,6 @@ public class User {
     }
 
     public Boolean canPay(Integer amount) {
-        return this.amount.balance() >= amount;
+        return this.amount.amount() >= amount;
     }
 }
