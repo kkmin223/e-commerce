@@ -17,4 +17,9 @@ public class ProductRepositoryImpl implements ProductRepository {
     public Product getProduct(Long id) {
         return null;
     }
+
+    @Override
+    public List<Product> findAllByProductIds(List<Long> productIds) {
+        return List.of();
+    }
 }

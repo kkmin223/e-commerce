@@ -13,6 +13,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+/**
+ * 순서를 검증할 수 있다.
+ */
 @ExtendWith(MockitoExtension.class)
 class UserFacadeTest {
 

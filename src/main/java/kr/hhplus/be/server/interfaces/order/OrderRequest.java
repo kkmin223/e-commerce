@@ -2,10 +2,12 @@ package kr.hhplus.be.server.interfaces.order;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
+import kr.hhplus.be.server.application.order.OrderCriteria;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class OrderRequest {
@@ -31,6 +33,13 @@ public class OrderRequest {
             description = "주문 상품 목록"
         )
         private List<OrderProduct> orderProducts;
+
+        public OrderCriteria.OrderAndPay toCriteria(LocalDateTime orderAt) {
+            return OrderCriteria.OrderAndPay.of(userId
+                , couponItemId
+                , orderProducts.stream().map(orderProduct -> OrderCriteria.OrderProduct.of(orderProduct.productId, orderProduct.quantity)).toList()
+                , orderAt);
+        }
     }
 
     @Getter

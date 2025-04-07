@@ -19,4 +19,8 @@ public class UserService {
         return user;
     }
 
+    public User getUser(UserCommand.Get command) {
+        return userRepository.getUser(command.getUserId());
+    }
+
 }

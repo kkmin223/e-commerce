@@ -2,6 +2,8 @@ package kr.hhplus.be.server.domain.product;
 
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
 import kr.hhplus.be.server.interfaces.common.exceptions.InvalidProductIdException;
+import kr.hhplus.be.server.interfaces.common.exceptions.OrderProductNotFoundException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -11,6 +13,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -73,5 +77,70 @@ class ProductServiceTest {
             .extracting(InvalidProductIdException::getCode, InvalidProductIdException::getMessage)
             .containsExactly(ErrorCode.INVALID_PRODUCT_ID.getCode(), ErrorCode.INVALID_PRODUCT_ID.getMessage());
 
+    }
+
+    @Test
+    void 주문요청을_상품_조회하고_상품_수량_Map을_반환한다() {
+        // given
+        ProductCommand.ProductsWithQuantity productsWithQuantity1 = new ProductCommand.ProductsWithQuantity(1L, 2);
+        ProductCommand.ProductsWithQuantity productsWithQuantity2 = new ProductCommand.ProductsWithQuantity(2L, 2);
+
+        Product product1 = Product.of(1L, "상품1", 10, 10_000);
+        Product product2 = Product.of(2L, "상품2", 10, 10_000);
+
+        ProductCommand.FindProductsWithQuantity command = new ProductCommand.FindProductsWithQuantity(List.of(productsWithQuantity1, productsWithQuantity2));
+
+        when(productRepository.findAllByProductIds(List.of(productsWithQuantity1.getProductId(), productsWithQuantity2.getProductId()))).thenReturn(List.of(product1, product2));
+
+        // when
+        Map<Product, Integer> productsWithQuantities = productService.findProductsWithQuantities(command);
+
+        // then
+        assertThat(productsWithQuantities)
+            .hasSize(2)
+            .containsEntry(product1, productsWithQuantity1.getQuantity())
+            .containsEntry(product2, productsWithQuantity2.getQuantity());
+    }
+
+    @Test
+    void 주문요청에_동일한_상품ID가_있으면_상품_수량을_합친다() {
+        // given
+        ProductCommand.ProductsWithQuantity productsWithQuantity1 = new ProductCommand.ProductsWithQuantity(1L, 2);
+        ProductCommand.ProductsWithQuantity productsWithQuantity2 = new ProductCommand.ProductsWithQuantity(1L, 2);
+
+        Product product1 = Product.of(1L, "상품1", 10, 10_000);
+
+        ProductCommand.FindProductsWithQuantity command = new ProductCommand.FindProductsWithQuantity(List.of(productsWithQuantity1, productsWithQuantity2));
+
+        when(productRepository.findAllByProductIds(List.of(productsWithQuantity1.getProductId()))).thenReturn(List.of(product1));
+
+        // when
+        Map<Product, Integer> productsWithQuantities = productService.findProductsWithQuantities(command);
+
+        // then
+        assertThat(productsWithQuantities)
+            .hasSize(1)
+            .containsEntry(product1, productsWithQuantity1.getQuantity() + productsWithQuantity2.getQuantity());
+    }
+
+    @Test
+    void 주문요청에_존재하지_않는_상품_식별자가_들어오면_에러가_발생한다() {
+        // given
+        ProductCommand.ProductsWithQuantity productsWithQuantity1 = new ProductCommand.ProductsWithQuantity(1L, 2);
+        ProductCommand.ProductsWithQuantity productsWithQuantity2 = new ProductCommand.ProductsWithQuantity(2L, 2);
+
+        Product product1 = Product.of(1L, "상품1", 10, 10_000);
+
+        ProductCommand.FindProductsWithQuantity command = new ProductCommand.FindProductsWithQuantity(List.of(productsWithQuantity1, productsWithQuantity2));
+
+        when(productRepository.findAllByProductIds(List.of(productsWithQuantity1.getProductId(), productsWithQuantity2.getProductId()))).thenReturn(List.of(product1));
+
+        // when
+        OrderProductNotFoundException exception = assertThrows(OrderProductNotFoundException.class, () -> productService.findProductsWithQuantities(command));
+
+        // then
+        assertThat(exception)
+            .extracting(OrderProductNotFoundException::getCode, OrderProductNotFoundException::getMessage)
+            .containsExactly(ErrorCode.ORDER_PRODUCT_NOT_FOUND.getCode(), ErrorCode.ORDER_PRODUCT_NOT_FOUND.getMessage());
     }
 }

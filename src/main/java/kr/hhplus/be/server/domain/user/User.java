@@ -35,4 +35,8 @@ public class User {
         }
         this.amount = this.amount.minus(amount);
     }
+
+    public Boolean canPay(Integer amount) {
+        return this.amount.balance() >= amount;
+    }
 }

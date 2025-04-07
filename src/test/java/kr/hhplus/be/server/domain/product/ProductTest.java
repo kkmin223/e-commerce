@@ -86,4 +86,31 @@ class ProductTest {
             .containsExactly(ErrorCode.INVALID_INCREASE_QUANTITY.getCode(), ErrorCode.INVALID_INCREASE_QUANTITY.getMessage());
     }
 
+    @ParameterizedTest
+    @ValueSource(ints = {1, 10})
+    void 주문_수량보다_재고_수량이_많거나_같으면_true를_반환한다(Integer orderQuantity) {
+        // given
+        Integer initialQuantity = 10;
+        Product product = Product.of(1L, "상품1", initialQuantity, 1_000);
+
+        // when
+        boolean result =  product.canOrder(orderQuantity);
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void 주문_수량보다_재고_수량이_적으면_false를_반환한다() {
+        // given
+        Integer initialQuantity = 10;
+        Product product = Product.of(1L, "상품1", initialQuantity, 1_000);
+        Integer orderQuantity = initialQuantity + 1;
+
+        // when
+        boolean result =  product.canOrder(orderQuantity);
+
+        // then
+        assertThat(result).isFalse();
+    }
 }

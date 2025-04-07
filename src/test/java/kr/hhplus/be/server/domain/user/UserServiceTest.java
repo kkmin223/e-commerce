@@ -61,4 +61,22 @@ class UserServiceTest {
             .containsExactly(ErrorCode.INVALID_CHARGE_AMOUNT.getCode(), ErrorCode.INVALID_CHARGE_AMOUNT.getMessage());
     }
 
+    @Test
+    void 유저를_조회한다() {
+        // given
+        Long userId = 1L;
+        Integer initialAmount = 100;
+        UserCommand.Get command = new UserCommand.Get(userId);
+
+        Mockito.when(userRepository.getUser(userId)).thenReturn(User.of(userId, initialAmount));
+
+        // when
+        User user = userService.getUser(command);
+
+        // then
+        assertThat(user)
+            .extracting(User::getId, User::getAmount)
+            .containsExactly(userId, initialAmount);
+    }
+
 }

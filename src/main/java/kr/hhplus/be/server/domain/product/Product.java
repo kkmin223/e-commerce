@@ -20,6 +20,10 @@ public class Product {
         return new Product(id, name, quantity, price);
     }
 
+    public boolean canOrder(Integer quantity) {
+        return quantity <= this.quantity;
+    }
+
     public void reduceQuantity(Integer quantity) {
         if (quantity <= 0) {
             throw new InvalidReduceQuantityException();
