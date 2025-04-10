@@ -15,7 +15,9 @@ public enum ErrorCode implements Code {
     INVALID_PRODUCT_ID("INVALID_PRODUCT_ID", "상품 식별자가 유효하지 않습니다."),
     ORDER_PRODUCT_NOT_FOUND("ORDER_PRODUCT_NOT_FOUND", "요청한 상품 중 존재하지 않는 상품이 있습니다."),
     COUPON_ALREADY_USED("COUPON_ALREADY_USED", "이미 사용한 쿠폰입니다."),
-    INSUFFICIENT_BALANCE("INSUFFICIENT_BALANCE", "잔액이 부족합니다.")
+    INSUFFICIENT_BALANCE("INSUFFICIENT_BALANCE", "잔액이 부족합니다."),
+    USER_NOT_FOUND("USER_NOT_FOUND", "사용자가_존재하지_않습니다."),
+    INVALID_USER_ID("INVALID_USER_ID", "사용자 식별자가 유효하지 않습니다.")
     ;
 
     private final String code;
