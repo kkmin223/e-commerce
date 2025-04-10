@@ -2,6 +2,7 @@ package kr.hhplus.be.server.interfaces.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import kr.hhplus.be.server.interfaces.coupon.CouponResponse;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,7 +30,7 @@ public class UserResponse {
 
     @Getter
     @NoArgsConstructor
-    @AllArgsConstructor
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     @Schema(description = "사용자 보유 쿠폰 조회 응답 DTO")
     public static class UserCoupon {
         @Schema(
@@ -40,6 +41,10 @@ public class UserResponse {
         @Schema(
             description = "보유 쿠폰 리스트"
         )
-        private List<CouponResponse.Coupon> couponse;
+        private List<CouponResponse.Coupon> coupons;
+
+        public static UserCoupon of(long userId, List<CouponResponse.Coupon> coupons) {
+            return new UserCoupon(userId, coupons);
+        }
     }
 }

@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.interfaces.user;
 
-import kr.hhplus.be.server.domain.coupon.CouponType;
 import kr.hhplus.be.server.domain.user.User;
+import kr.hhplus.be.server.domain.user.UserCommand;
 import kr.hhplus.be.server.domain.user.UserService;
 import kr.hhplus.be.server.interfaces.common.ApiResult;
 import kr.hhplus.be.server.interfaces.common.SuccessCode;
@@ -40,8 +40,16 @@ public class UserController implements UserApi {
     @Override
     @GetMapping("/{id}/coupons")
     public ResponseEntity<ApiResult<UserResponse.UserCoupon>> getUserCoupons(long id) {
+        User user = userService.getUser(UserCommand.Get.of(id));
+        List<CouponResponse.Coupon> coupons = user.getCouponItems().stream().map(couponItem ->
+            CouponResponse.Coupon.of(couponItem.getId(),
+                couponItem.getCoupon().getTitle(),
+                couponItem.getIsUsed(),
+                couponItem.getCoupon().getDiscountLabel(),
+                couponItem.getCoupon().getCouponType())).toList();
+
         return ResponseEntity.ok(
-            ApiResult.of(SuccessCode.LIST_USER_COUPONS, new UserResponse.UserCoupon(id, List.of(CouponResponse.Coupon.of(1L, "쿠폰1", true, "1000", CouponType.AMOUNT))))
-        );
+            ApiResult.of(SuccessCode.LIST_USER_COUPONS,
+                UserResponse.UserCoupon.of(user.getId(), coupons)));
     }
 }

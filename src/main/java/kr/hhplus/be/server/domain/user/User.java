@@ -1,11 +1,15 @@
 package kr.hhplus.be.server.domain.user;
 
 import kr.hhplus.be.server.domain.amount.Amount;
+import kr.hhplus.be.server.domain.couponItem.CouponItem;
 import kr.hhplus.be.server.interfaces.common.exceptions.InvalidChargeAmountException;
 import kr.hhplus.be.server.interfaces.common.exceptions.InvalidDeductAmountException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -13,6 +17,13 @@ import lombok.NoArgsConstructor;
 public class User {
     private Long id;
     private Amount amount;
+    private List<CouponItem> couponItems;
+
+    private User(Long userId, Amount amount) {
+        this.id = userId;
+        this.amount = amount;
+        this.couponItems = new ArrayList<>();
+    }
 
     public static User of(Long userId, Integer amount) {
         return new User(userId, Amount.of(amount));
