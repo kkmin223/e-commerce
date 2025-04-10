@@ -5,6 +5,9 @@ import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
 import kr.hhplus.be.server.interfaces.common.exceptions.InsufficientStockException;
+import kr.hhplus.be.server.interfaces.common.exceptions.OrderProductNotFoundException;
+import kr.hhplus.be.server.interfaces.common.exceptions.UserNotFoundException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -95,5 +98,74 @@ class OrderServiceTest {
             .containsExactly(ErrorCode.INSUFFICIENT_STOCK.getCode(), ErrorCode.INSUFFICIENT_STOCK.getMessage());
 
         verify(orderRepository, never()).save(any(Order.class));
+    }
+
+    @Test
+    void 사용자가_null이면_주문_생성에_실패한다() {
+        // given
+        User user = null;
+        Integer stockQuantity1 = 10;
+        Product product1 = Product.of(1L, "상품1", stockQuantity1, 10_000);
+        Integer orderQuantity1 = 1;
+
+        Integer stockQuantity2 = 10;
+        Product product2 = Product.of(2L, "상품2", stockQuantity2, 20_000);
+        Integer orderQuantity2 = 2;
+
+        Map<Product, Integer> productQuantities = new HashMap<>();
+        productQuantities.put(product1, orderQuantity1);
+        productQuantities.put(product2, orderQuantity2);
+
+        LocalDateTime orderAt = LocalDateTime.now();
+
+        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, orderAt);
+
+        // when
+        UserNotFoundException exception = Assertions.assertThrows(UserNotFoundException.class, () -> orderService.createOrder(command));
+
+        // then
+        assertThat(exception)
+            .extracting(UserNotFoundException::getCode, UserNotFoundException::getMessage)
+            .containsExactly(ErrorCode.USER_NOT_FOUND.getCode(), ErrorCode.USER_NOT_FOUND.getMessage());
+    }
+
+    @Test
+    void 주문상품이_null이면_주문_생성에_실패한다() {
+        // given
+        User user = User.of(1L, 1_000_000);
+
+        Map<Product, Integer> productQuantities = null;
+
+        LocalDateTime orderAt = LocalDateTime.now();
+
+        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, orderAt);
+
+        // when
+        OrderProductNotFoundException exception = Assertions.assertThrows(OrderProductNotFoundException.class, () -> orderService.createOrder(command));
+
+        // then
+        assertThat(exception)
+            .extracting(OrderProductNotFoundException::getCode, OrderProductNotFoundException::getMessage)
+            .containsExactly(ErrorCode.ORDER_PRODUCT_NOT_FOUND.getCode(), ErrorCode.ORDER_PRODUCT_NOT_FOUND.getMessage());
+    }
+
+    @Test
+    void 주문상품이_비었으면_주문_생성에_실패한다() {
+        // given
+        User user = User.of(1L, 1_000_000);
+
+        Map<Product, Integer> productQuantities = new HashMap<>();
+
+        LocalDateTime orderAt = LocalDateTime.now();
+
+        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, orderAt);
+
+        // when
+        OrderProductNotFoundException exception = Assertions.assertThrows(OrderProductNotFoundException.class, () -> orderService.createOrder(command));
+
+        // then
+        assertThat(exception)
+            .extracting(OrderProductNotFoundException::getCode, OrderProductNotFoundException::getMessage)
+            .containsExactly(ErrorCode.ORDER_PRODUCT_NOT_FOUND.getCode(), ErrorCode.ORDER_PRODUCT_NOT_FOUND.getMessage());
     }
 }
