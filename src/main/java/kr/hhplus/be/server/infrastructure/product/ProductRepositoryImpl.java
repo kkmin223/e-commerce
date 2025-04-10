@@ -5,6 +5,7 @@ import kr.hhplus.be.server.domain.product.ProductRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class ProductRepositoryImpl implements ProductRepository {
@@ -14,7 +15,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public Product getProduct(Long id) {
+    public Optional<Product> getProduct(Long id) {
         return null;
     }
 

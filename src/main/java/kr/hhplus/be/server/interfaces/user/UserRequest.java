@@ -2,6 +2,7 @@ package kr.hhplus.be.server.interfaces.user;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
+import kr.hhplus.be.server.domain.user.UserCommand;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,5 +20,9 @@ public class UserRequest {
         )
         @Min(value = 1, message = "충전 금액이 유효하지 않습니다.")
         private int amount;
+
+        public UserCommand.Charge toCommand(Long userId) {
+            return UserCommand.Charge.of(userId, amount);
+        }
     }
 }

@@ -1,11 +1,12 @@
 package kr.hhplus.be.server.domain.product;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductRepository {
     List<Product> listProducts();
 
-    Product getProduct(Long id);
+    Optional<Product> getProduct(Long id);
 
     List<Product> findAllByProductIds(List<Long> productIds);
 }

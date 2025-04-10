@@ -3,8 +3,8 @@ package kr.hhplus.be.server.interfaces.common.exceptions;
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
 import org.springframework.http.HttpStatus;
 
-public class UserNotFoundException extends CustomException {
-    public UserNotFoundException() {
-        super(ErrorCode.USER_NOT_FOUND, HttpStatus.BAD_REQUEST);
+public class InvalidUserIdException extends CustomException {
+    public InvalidUserIdException(){
+        super(ErrorCode.INVALID_USER_ID, HttpStatus.BAD_REQUEST);
     }
 }

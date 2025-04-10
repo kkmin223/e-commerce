@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.product;
 
 import kr.hhplus.be.server.application.order.OrderCriteria;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,9 +12,13 @@ public class ProductCommand {
 
     @Getter
     @NoArgsConstructor
-    @AllArgsConstructor
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Get {
         private Long productId;
+
+        public static Get of(Long productId) {
+            return new Get(productId);
+        }
     }
 
     @Getter

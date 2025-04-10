@@ -16,10 +16,13 @@ public enum ErrorCode implements Code {
     ORDER_PRODUCT_NOT_FOUND("ORDER_PRODUCT_NOT_FOUND", "요청한 상품 중 존재하지 않는 상품이 있습니다."),
     COUPON_ALREADY_USED("COUPON_ALREADY_USED", "이미 사용한 쿠폰입니다."),
     INSUFFICIENT_BALANCE("INSUFFICIENT_BALANCE", "잔액이 부족합니다."),
+    USER_NOT_FOUND("USER_NOT_FOUND", "사용자가 존재하지 않습니다."),
+    INVALID_USER_ID("INVALID_USER_ID", "사용자 식별자가 유효하지 않습니다."),
+    PRODUCT_NOT_FOUND("PRODUCT_NOT_FOUND", "상품이 존재하지 않습니다."),
+    INVALID_ORDER_QUANTITY("INVALID_ORDER_QUANTITY", "주문 수량이 유효하지 않습니다."),
     INSUFFICIENT_COUPON_QUANTITY("INSUFFICIENT_COUPON_QUANTITY", "쿠폰 수량이 부족합니다."),
     COUPON_NOT_FOUND("COUPON_NOT_FOUND", "쿠폰이 존재하지 않습니다."),
     INVALID_COUPON_ID("INVALID_COUPON_ID", "쿠폰 식별자가 유효하지 않습니다."),
-    USER_NOT_FOUNT("USER_NOT_FOUNT", "사용자가_존재하지_않습니다."),
     ;
 
     private final String code;

@@ -1,9 +1,8 @@
 package kr.hhplus.be.server.interfaces.user;
 
-import kr.hhplus.be.server.application.user.UserCriteria;
-import kr.hhplus.be.server.application.user.UserFacade;
-import kr.hhplus.be.server.application.user.UserResult;
 import kr.hhplus.be.server.domain.coupon.CouponType;
+import kr.hhplus.be.server.domain.user.User;
+import kr.hhplus.be.server.domain.user.UserService;
 import kr.hhplus.be.server.interfaces.common.ApiResult;
 import kr.hhplus.be.server.interfaces.common.SuccessCode;
 import kr.hhplus.be.server.interfaces.coupon.CouponResponse;
@@ -23,7 +22,7 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController implements UserApi {
 
-    private final UserFacade userFacade;
+    private final UserService userService;
 
     @Override
     @GetMapping("/{id}/amount")
@@ -33,11 +32,9 @@ public class UserController implements UserApi {
 
     @Override
     @PostMapping("/{id}/amount/charge")
-    public ResponseEntity<ApiResult<UserResponse.UserAmount>> chargeUserAmount(long id, UserRequest.Charge chargeRequestDto) {
-        UserCriteria.Charge chargeCriteria = new UserCriteria.Charge(id, chargeRequestDto.getAmount());
-        UserResult.UserAmount userAmount = userFacade.charge(chargeCriteria);
-
-        return ResponseEntity.ok(ApiResult.of(SuccessCode.CHARGE_USER_AMOUNT, new UserResponse.UserAmount(userAmount.getUserId(), userAmount.getAmount())));
+    public ResponseEntity<ApiResult<UserResponse.UserAmount>> chargeUserAmount(long id, UserRequest.Charge chargeRequest) {
+        User user = userService.charge(chargeRequest.toCommand(id));
+        return ResponseEntity.ok(ApiResult.of(SuccessCode.CHARGE_USER_AMOUNT, new UserResponse.UserAmount(user.getId(), user.getAmount())));
     }
 
     @Override
