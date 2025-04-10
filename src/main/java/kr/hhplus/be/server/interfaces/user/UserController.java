@@ -2,6 +2,7 @@ package kr.hhplus.be.server.interfaces.user;
 
 import kr.hhplus.be.server.domain.coupon.CouponType;
 import kr.hhplus.be.server.domain.user.User;
+import kr.hhplus.be.server.domain.user.UserCommand;
 import kr.hhplus.be.server.domain.user.UserService;
 import kr.hhplus.be.server.interfaces.common.ApiResult;
 import kr.hhplus.be.server.interfaces.common.SuccessCode;
@@ -27,7 +28,11 @@ public class UserController implements UserApi {
     @Override
     @GetMapping("/{id}/amount")
     public ResponseEntity<ApiResult<UserResponse.UserAmount>> getUserAmount(long id) {
-        return ResponseEntity.ok(ApiResult.of(SuccessCode.CHARGE_USER_AMOUNT, new UserResponse.UserAmount(id, 5000)));
+        User user = userService.getUser(UserCommand.Get.of(id));
+        return ResponseEntity.ok(
+            ApiResult.of(
+                SuccessCode.CHARGE_USER_AMOUNT,
+                new UserResponse.UserAmount(user.getId(), user.getAmount())));
     }
 
     @Override
