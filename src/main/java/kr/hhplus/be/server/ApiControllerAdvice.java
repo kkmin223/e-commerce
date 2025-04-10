@@ -1,7 +1,8 @@
 package kr.hhplus.be.server;
 
 import jakarta.validation.ConstraintViolationException;
-import kr.hhplus.be.server.dto.ErrorResponse;
+import kr.hhplus.be.server.interfaces.common.ErrorResult;
+import kr.hhplus.be.server.interfaces.common.exceptions.CustomException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -17,34 +18,38 @@ public class ApiControllerAdvice {
 
     // Request 유효성 에러
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        BindingResult bindingResult = e.getBindingResult();
+    public ResponseEntity<ErrorResult> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        log.error(ex.getMessage(), ex);
+        BindingResult bindingResult = ex.getBindingResult();
 
         // field : message 형식으로 변환
         String errorMessage = bindingResult.getFieldErrors().stream()
             .map(fieldError -> fieldError.getField() + " : " + fieldError.getDefaultMessage())
             .collect(Collectors.joining(", "));
 
-        return ResponseEntity.status(400).body(new ErrorResponse("400", errorMessage));
+        return ResponseEntity.status(400).body(new ErrorResult("INVALID_INPUT_ERROR", errorMessage));
     }
 
     // Request 유효성 에러
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException e) {
-        return ResponseEntity.status(400).body(new ErrorResponse("400", e.getMessage()));
+    public ResponseEntity<ErrorResult> handleConstraintViolationException(ConstraintViolationException ex) {
+        log.error(ex.getMessage(), ex);
+        return ResponseEntity.status(400).body(new ErrorResult("INVALID_INPUT_ERROR", ex.getMessage()));
     }
 
-
-    // 존재하지 않는 리소스 접근
-    @ExceptionHandler(value = IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleRuntimeException(IllegalArgumentException e) {
-        return ResponseEntity.status(500).body(new ErrorResponse("404", e.getMessage()));
+    // Custom Exception 에러
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<ErrorResult> handleCustomException(CustomException ex) {
+        log.error(ex.getMessage(), ex);
+        return ResponseEntity.status(ex.getStatus()).body(
+            new ErrorResult(ex.getCode(), ex.getMessage())
+        );
     }
 
     // 서버 에러
     @ExceptionHandler(value = Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(Exception e) {
-        log.error(e.getMessage(), e);
-        return ResponseEntity.status(500).body(new ErrorResponse("500", "에러가 발생했습니다."));
+    public ResponseEntity<ErrorResult> handleException(Exception ex) {
+        log.error(ex.getMessage(), ex);
+        return ResponseEntity.status(500).body(new ErrorResult("INTERNAL_SERVER_ERROR", "에러가 발생했습니다."));
     }
 }

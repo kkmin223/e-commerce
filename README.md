@@ -63,8 +63,117 @@ docker-compose up -d
 - CouponItem: 사용자가 발급받은 쿠폰을 관리, 결제에서 쿠폰을 적용, 쿠폰 사용 여부를 관리합니다.
 - OrderStatistics : 일별 상품의 판매량 정보를 가지고 있습니다.
 - StatisticsManager : 주문 내역을 기반으로 주문 통계를 생성하고, 주문 통계를 기반으로 인기 판매 정보를 반환합니다.
+```mermaid
+classDiagram
+    class User {
+        - id
+        + getAmount()
+        + getAvailableCoupons()
+        + chargeAmount(amount)
+        + deductAmount(amount)
+        + canPay(amount)
+    }
+    
+    class Amount {
+        - amount
+        + minus(amount)
+        + plus(amount)
+    }        
 
-![클래스 다이어그램](docs/image/class_diagram.png)
+    class Product {
+        - id
+        - name
+        - quantity
+        - price
+        + reduceQuantity(quantity)
+        + increaseQuantity(quantity)
+        + canOrder(quantity)
+    }
+
+    class Order {
+        - id
+        - totalAmount
+        - paymentAmount
+        - orderAt
+        - status
+        + create()
+        + cancelOrder(paymentAmount)
+    }
+
+    class OrderItem {
+        - id
+        - orderQuantity
+        - subtotal
+        + create()
+    }
+
+    class Payment {
+        - id
+        - paymentAmount
+        + applyCoupon(couponItem)
+        + processPayment()
+        + create()
+    }
+
+    class Coupon {
+        <<interface>>
+        - id
+        - title
+        - initialQuantity
+        - remainingQuantity
+        + apply(amount)
+        + giveCouponItem(user)
+    }
+
+    class AmountCoupon {
+        - discountAmount
+        + apply(amount)
+    }
+
+    class PercentageCoupon {
+        - discountRate
+        + apply(amount)
+    }
+
+    class CouponItem {
+        - id
+        - isUsed
+        + markAsUsed()
+        + applyDiscount(amount)
+    }        
+
+    class OrderStatistics {
+        - id
+        - statisticsDate
+        - productId
+        - totalSoldQuantity
+    }
+
+    class StatisticsManager {
+        + generateStatistics(orderItems)
+        + getTopSellingProducts(duration)
+    }
+
+    class DataPlatform {
+        +sendOrderData(order)
+    }
+
+    User "1" --> "1" Amount : 보유한다
+    User "1" --> "0..*" Order : 주문한다
+    Payment --> User : 결제 요청
+    User "1" --> "0..*" CouponItem : 보유한다
+    Order "1" --> "1..*" OrderItem : 포함한다
+    OrderItem "1" --> "1" Product : 참조한다
+    Order "1" --> "1" Payment : 결제된다
+    CouponItem "1" --> "1" Payment : 적용한다
+    CouponItem "1" --> "1" Coupon : 포함한다
+    Coupon <|.. AmountCoupon : 정액 할인 쿠폰
+    Coupon <|.. PercentageCoupon : 퍼센트 할인 쿠폰
+    StatisticsManager ..> OrderItem : 집계한다
+    StatisticsManager --> OrderStatistics : 생성한다
+    StatisticsManager --> OrderStatistics : 조회한다
+    Order-->DataPlatform: 데이터 전송
+```
 
 ## 시퀀스 다이어그램
 
