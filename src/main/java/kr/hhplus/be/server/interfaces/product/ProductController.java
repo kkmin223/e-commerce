@@ -1,8 +1,8 @@
 package kr.hhplus.be.server.interfaces.product;
 
-import kr.hhplus.be.server.application.product.ProductCriteria;
-import kr.hhplus.be.server.application.product.ProductFacade;
-import kr.hhplus.be.server.application.product.ProductResult;
+import kr.hhplus.be.server.domain.product.Product;
+import kr.hhplus.be.server.domain.product.ProductCommand;
+import kr.hhplus.be.server.domain.product.ProductService;
 import kr.hhplus.be.server.interfaces.common.ApiResult;
 import kr.hhplus.be.server.interfaces.common.SuccessCode;
 import lombok.RequiredArgsConstructor;
@@ -20,20 +20,29 @@ import java.util.List;
 @RequestMapping("/products")
 public class ProductController implements ProductApi {
 
-    private final ProductFacade productFacade;
+    private final ProductService productService;
 
     @Override
     @GetMapping()
     public ResponseEntity<ApiResult<List<ProductResponse.Product>>> listProduct() {
-        List<ProductResult.Product> products = productFacade.listProducts();
-        return ResponseEntity.ok(ApiResult.of(SuccessCode.LIST_PRODUCT, products.stream().map(ProductResponse.Product::created).toList()));
+        List<Product> products = productService.listProducts();
+
+        return ResponseEntity.ok(
+            ApiResult.of(
+                SuccessCode.LIST_PRODUCT,
+                products.stream().map(product -> ProductResponse.Product.of(product.getId(), product.getName(), product.getPrice(), product.getQuantity())).toList()));
     }
 
     @Override
     @GetMapping("/{id}")
     public ResponseEntity<ApiResult<ProductResponse.Product>> getProduct(long id) {
-        ProductResult.Product product = productFacade.getProduct(new ProductCriteria.Get(id));
-        return ResponseEntity.ok(ApiResult.of(SuccessCode.GET_PRODUCT, ProductResponse.Product.created(product)));
+        Product product = productService.getProduct(ProductCommand.Get.of(id));
+
+
+        return ResponseEntity.ok(
+            ApiResult.of(
+                SuccessCode.GET_PRODUCT,
+                ProductResponse.Product.of(product.getId(), product.getName(), product.getPrice(), product.getQuantity())));
     }
 
     @Override

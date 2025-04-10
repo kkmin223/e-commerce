@@ -1,9 +1,9 @@
 package kr.hhplus.be.server.domain.product;
 
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
+import kr.hhplus.be.server.interfaces.common.exceptions.InvalidOrderQuantityException;
 import kr.hhplus.be.server.interfaces.common.exceptions.InvalidProductIdException;
 import kr.hhplus.be.server.interfaces.common.exceptions.OrderProductNotFoundException;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -52,9 +52,9 @@ class ProductServiceTest {
         // given
         Product product = Product.of(1L, "상품", 10, 10_000);
 
-        ProductCommand.Get getCommand = new ProductCommand.Get(product.getId());
+        ProductCommand.Get getCommand = ProductCommand.Get.of(product.getId());
 
-        when(productRepository.getProduct(getCommand.getProductId())).thenReturn(product);
+        when(productRepository.getProduct(getCommand.getProductId())).thenReturn(Optional.of(product));
         // when
         Product resultProduct = productService.getProduct(getCommand);
 
@@ -63,11 +63,26 @@ class ProductServiceTest {
             .isEqualTo(product);
     }
 
+    @Test
+    void 상품_식별자가_null이면_상품_조회가_실패한다() {
+        // given
+        Long productId = null;
+        ProductCommand.Get getCommand = ProductCommand.Get.of(productId);
+
+        // when
+        InvalidProductIdException exception = assertThrows(InvalidProductIdException.class, () -> productService.getProduct(getCommand));
+
+        // then
+        assertThat(exception)
+            .extracting(InvalidProductIdException::getCode, InvalidProductIdException::getMessage)
+            .containsExactly(ErrorCode.INVALID_PRODUCT_ID.getCode(), ErrorCode.INVALID_PRODUCT_ID.getMessage());
+    }
+
     @ParameterizedTest
     @ValueSource(longs = {-1, 0})
     void 상품_식별자가_0보다_작거나_같을때_상품_조회가_실패한다(Long productId) {
         // given
-        ProductCommand.Get getCommand = new ProductCommand.Get(productId);
+        ProductCommand.Get getCommand = ProductCommand.Get.of(productId);
 
         // when
         InvalidProductIdException exception = assertThrows(InvalidProductIdException.class, () -> productService.getProduct(getCommand));
@@ -142,5 +157,72 @@ class ProductServiceTest {
         assertThat(exception)
             .extracting(OrderProductNotFoundException::getCode, OrderProductNotFoundException::getMessage)
             .containsExactly(ErrorCode.ORDER_PRODUCT_NOT_FOUND.getCode(), ErrorCode.ORDER_PRODUCT_NOT_FOUND.getMessage());
+    }
+
+    @Test
+    void 주문요청에_상품_식별자가_null이면_에러가_발생한다() {
+        // given
+        ProductCommand.ProductsWithQuantity productsWithQuantity1 = new ProductCommand.ProductsWithQuantity(null, 2);
+        ProductCommand.ProductsWithQuantity productsWithQuantity2 = new ProductCommand.ProductsWithQuantity(2L, 2);
+
+        ProductCommand.FindProductsWithQuantity command = new ProductCommand.FindProductsWithQuantity(List.of(productsWithQuantity1, productsWithQuantity2));
+
+        // when
+        InvalidProductIdException exception = assertThrows(InvalidProductIdException.class, () -> productService.findProductsWithQuantities(command));
+
+        // then
+        assertThat(exception)
+            .extracting(InvalidProductIdException::getCode, InvalidProductIdException::getMessage)
+            .containsExactly(ErrorCode.INVALID_PRODUCT_ID.getCode(), ErrorCode.INVALID_PRODUCT_ID.getMessage());
+    }
+
+    @ParameterizedTest
+    @ValueSource(longs = {0, -1})
+    void 주문요청에_상품_식별자가_0보다_작거나_같으면_에러가_발생한다(Long productId) {
+        // given
+        ProductCommand.ProductsWithQuantity productsWithQuantity1 = new ProductCommand.ProductsWithQuantity(productId, 2);
+
+        ProductCommand.FindProductsWithQuantity command = new ProductCommand.FindProductsWithQuantity(List.of(productsWithQuantity1));
+
+        // when
+        InvalidProductIdException exception = assertThrows(InvalidProductIdException.class, () -> productService.findProductsWithQuantities(command));
+
+        // then
+        assertThat(exception)
+            .extracting(InvalidProductIdException::getCode, InvalidProductIdException::getMessage)
+            .containsExactly(ErrorCode.INVALID_PRODUCT_ID.getCode(), ErrorCode.INVALID_PRODUCT_ID.getMessage());
+    }
+
+    @Test
+    void 주문요청에_주문수량이_null이면_에러가_발생한다() {
+        // given
+        ProductCommand.ProductsWithQuantity productsWithQuantity1 = new ProductCommand.ProductsWithQuantity(1L, null);
+
+        ProductCommand.FindProductsWithQuantity command = new ProductCommand.FindProductsWithQuantity(List.of(productsWithQuantity1));
+
+        // when
+        InvalidOrderQuantityException exception = assertThrows(InvalidOrderQuantityException.class, () -> productService.findProductsWithQuantities(command));
+
+        // then
+        assertThat(exception)
+            .extracting(InvalidOrderQuantityException::getCode, InvalidOrderQuantityException::getMessage)
+            .containsExactly(ErrorCode.INVALID_ORDER_QUANTITY.getCode(), ErrorCode.INVALID_ORDER_QUANTITY.getMessage());
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {0, -1})
+    void 주문요청에_주문수량이_0보다_작거나_같으면_에러가_발생한다(Integer quantity) {
+        // given
+        ProductCommand.ProductsWithQuantity productsWithQuantity1 = new ProductCommand.ProductsWithQuantity(1L, quantity);
+
+        ProductCommand.FindProductsWithQuantity command = new ProductCommand.FindProductsWithQuantity(List.of(productsWithQuantity1));
+
+        // when
+        InvalidOrderQuantityException exception = assertThrows(InvalidOrderQuantityException.class, () -> productService.findProductsWithQuantities(command));
+
+        // then
+        assertThat(exception)
+            .extracting(InvalidOrderQuantityException::getCode, InvalidOrderQuantityException::getMessage)
+            .containsExactly(ErrorCode.INVALID_ORDER_QUANTITY.getCode(), ErrorCode.INVALID_ORDER_QUANTITY.getMessage());
     }
 }

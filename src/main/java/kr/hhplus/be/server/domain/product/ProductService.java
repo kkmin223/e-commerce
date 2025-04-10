@@ -1,7 +1,9 @@
 package kr.hhplus.be.server.domain.product;
 
+import kr.hhplus.be.server.interfaces.common.exceptions.InvalidOrderQuantityException;
 import kr.hhplus.be.server.interfaces.common.exceptions.InvalidProductIdException;
 import kr.hhplus.be.server.interfaces.common.exceptions.OrderProductNotFoundException;
+import kr.hhplus.be.server.interfaces.common.exceptions.ProductNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,15 +22,29 @@ public class ProductService {
     }
 
     public Product getProduct(ProductCommand.Get command) {
-        if (command.getProductId() <= 0) {
+        if (command.getProductId() == null
+            || command.getProductId() <= 0) {
             throw new InvalidProductIdException();
         }
 
-        return productRepository.getProduct(command.getProductId());
+        return productRepository.getProduct(command.getProductId())
+            .orElseThrow(ProductNotFoundException::new);
     }
 
     public Map<Product, Integer> findProductsWithQuantities(ProductCommand.FindProductsWithQuantity command) {
+
         Map<Long, Integer> quantityMap = command.getProducts().stream()
+            .peek(product -> {
+                if (product.getProductId() == null
+                    || product.getProductId() <= 0) {
+                    throw new InvalidProductIdException();
+                }
+
+                if (product.getQuantity() == null
+                    || product.getQuantity() <= 0) {
+                    throw new InvalidOrderQuantityException();
+                }
+            })
             .collect(Collectors.toMap(
                 ProductCommand.ProductsWithQuantity::getProductId,
                 ProductCommand.ProductsWithQuantity::getQuantity,
