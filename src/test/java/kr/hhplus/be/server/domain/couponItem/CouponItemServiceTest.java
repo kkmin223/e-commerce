@@ -59,7 +59,7 @@ class CouponItemServiceTest {
         // then
         assertThat(exception)
             .extracting(UserNotFoundException::getCode, UserNotFoundException::getMessage)
-            .containsExactly(ErrorCode.USER_NOT_FOUNT.getCode(), ErrorCode.USER_NOT_FOUNT.getMessage());
+            .containsExactly(ErrorCode.USER_NOT_FOUND.getCode(), ErrorCode.USER_NOT_FOUND.getMessage());
 
         verify(couponItemRepository, never()).save(Mockito.any(CouponItem.class));
     }
