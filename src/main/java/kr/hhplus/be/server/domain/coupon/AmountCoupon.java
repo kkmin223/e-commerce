@@ -21,4 +21,14 @@ public class AmountCoupon extends Coupon {
     public Integer apply(Integer amount) {
         return Math.max(0, amount - discountAmount);
     }
+
+    @Override
+    public CouponType getCouponType() {
+        return CouponType.AMOUNT;
+    }
+
+    @Override
+    public String getDiscountLabel() {
+        return String.format("₩%,d 할인", discountAmount);
+    }
 }

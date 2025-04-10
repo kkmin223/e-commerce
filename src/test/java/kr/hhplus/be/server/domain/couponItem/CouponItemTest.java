@@ -61,4 +61,5 @@ class CouponItemTest {
             .extracting(CouponAlreadyUsedException::getCode, CouponAlreadyUsedException::getMessage)
             .containsExactly(ErrorCode.COUPON_ALREADY_USED.getCode(), ErrorCode.COUPON_ALREADY_USED.getMessage());
     }
+
 }

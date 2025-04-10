@@ -38,4 +38,9 @@ public class CouponItem {
         this.isUsed = true;
     }
 
+    public static CouponItem issue(User user, Coupon coupon) {
+        coupon.decreaseRemainingQuantity();
+        return new CouponItem(user, coupon, false);
+    }
+
 }

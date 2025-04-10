@@ -12,4 +12,9 @@ public class CouponItemService {
     public CouponItem getCouponItem(CouponItemCommand.Get command) {
         return couponItemRepository.getCouponItem(command.getCouponItemId());
     }
+
+    public CouponItem issueCouponItem(CouponItemCommand.Issue command) {
+        return CouponItem.issue(command.getUser(), command.getCoupon());
+    }
+
 }

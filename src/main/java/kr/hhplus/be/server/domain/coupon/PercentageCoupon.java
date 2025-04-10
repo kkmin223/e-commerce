@@ -21,4 +21,14 @@ public class PercentageCoupon extends Coupon {
     public Integer apply(Integer amount) {
         return (int) (amount * (Double.valueOf(100 - discountRate) / 100));
     }
+
+    @Override
+    public CouponType getCouponType() {
+        return CouponType.PERCENTAGE;
+    }
+
+    @Override
+    public String getDiscountLabel() {
+        return String.format("%d%% 할인", discountRate);
+    }
 }
