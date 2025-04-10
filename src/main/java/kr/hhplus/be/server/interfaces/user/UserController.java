@@ -44,7 +44,7 @@ public class UserController implements UserApi {
     @GetMapping("/{id}/coupons")
     public ResponseEntity<ApiResult<UserResponse.UserCoupon>> getUserCoupons(long id) {
         return ResponseEntity.ok(
-            ApiResult.of(SuccessCode.LIST_USER_COUPONS, new UserResponse.UserCoupon(id, List.of(new CouponResponse.Coupon(1L, "쿠폰1", true, 1000, CouponType.AMOUNT))))
+            ApiResult.of(SuccessCode.LIST_USER_COUPONS, new UserResponse.UserCoupon(id, List.of(CouponResponse.Coupon.of(1L, "쿠폰1", true, "1000", CouponType.AMOUNT))))
         );
     }
 }

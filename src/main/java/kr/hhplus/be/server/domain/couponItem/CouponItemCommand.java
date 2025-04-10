@@ -2,10 +2,7 @@ package kr.hhplus.be.server.domain.couponItem;
 
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.user.User;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 public class CouponItemCommand {
 
@@ -23,6 +20,7 @@ public class CouponItemCommand {
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @EqualsAndHashCode
     public static class Issue {
         private Coupon coupon;
         private User user;

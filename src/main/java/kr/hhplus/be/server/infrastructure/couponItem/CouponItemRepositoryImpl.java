@@ -10,4 +10,9 @@ public class CouponItemRepositoryImpl implements CouponItemRepository {
     public CouponItem getCouponItem(Long id) {
         return null;
     }
+
+    @Override
+    public CouponItem save(CouponItem couponItem) {
+        return null;
+    }
 }

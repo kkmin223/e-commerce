@@ -1,15 +1,13 @@
 package kr.hhplus.be.server.domain.coupon;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 public class CouponCommand {
 
     @Getter
     @NoArgsConstructor
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @EqualsAndHashCode
     public static class Get {
         private Long couponId;
 

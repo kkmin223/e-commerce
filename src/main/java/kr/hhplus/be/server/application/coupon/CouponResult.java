@@ -12,13 +12,13 @@ public class CouponResult {
     @NoArgsConstructor
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
     public static class Issue {
-        private long id;
+        private Long id;
         private String couponName;
         private Boolean isUsed;
         private String discountLabel;
         private CouponType couponType;
 
-        public static Issue of(long id, String couponName, Boolean isUsed, String discountLabel, CouponType couponType) {
+        public static Issue of(Long id, String couponName, Boolean isUsed, String discountLabel, CouponType couponType) {
             return new Issue(id, couponName, isUsed, discountLabel, couponType);
         }
     }

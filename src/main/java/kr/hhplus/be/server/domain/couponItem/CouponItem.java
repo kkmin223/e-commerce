@@ -3,6 +3,7 @@ package kr.hhplus.be.server.domain.couponItem;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.interfaces.common.exceptions.CouponAlreadyUsedException;
+import kr.hhplus.be.server.interfaces.common.exceptions.InsufficientCouponQuantityException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -39,6 +40,10 @@ public class CouponItem {
     }
 
     public static CouponItem issue(User user, Coupon coupon) {
+        if (!coupon.canIssue()) {
+            throw new InsufficientCouponQuantityException();
+        }
+
         coupon.decreaseRemainingQuantity();
         return new CouponItem(user, coupon, false);
     }
