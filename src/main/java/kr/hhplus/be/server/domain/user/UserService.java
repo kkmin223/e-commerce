@@ -1,8 +1,7 @@
 package kr.hhplus.be.server.domain.user;
 
-import kr.hhplus.be.server.interfaces.common.exceptions.InvalidChargeAmountException;
-import kr.hhplus.be.server.interfaces.common.exceptions.InvalidUserIdException;
-import kr.hhplus.be.server.interfaces.common.exceptions.UserNotFoundException;
+import kr.hhplus.be.server.interfaces.common.ErrorCode;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,15 +16,15 @@ public class UserService {
     public User charge(UserCommand.Charge command) {
         if (command.getUserId() == null
             || command.getUserId() <= 0) {
-            throw new InvalidUserIdException();
+            throw new BusinessLogicException(ErrorCode.INVALID_USER_ID);
         }
 
         User user = userRepository.getUser(command.getUserId())
-            .orElseThrow(UserNotFoundException::new);
+            .orElseThrow(() -> new BusinessLogicException(ErrorCode.USER_NOT_FOUND));
 
         if (command.getChargeAmount() == null
             || command.getChargeAmount() <= 0) {
-            throw new InvalidChargeAmountException();
+            throw new BusinessLogicException(ErrorCode.INVALID_CHARGE_AMOUNT);
         }
 
         user.chargeAmount(command.getChargeAmount());
@@ -36,11 +35,11 @@ public class UserService {
     public User getUser(UserCommand.Get command) {
         if (command.getUserId() == null
             || command.getUserId() <= 0) {
-            throw new InvalidUserIdException();
+            throw new BusinessLogicException(ErrorCode.INVALID_USER_ID);
         }
 
         return userRepository.getUser(command.getUserId())
-            .orElseThrow(UserNotFoundException::new);
+            .orElseThrow(() -> new BusinessLogicException(ErrorCode.USER_NOT_FOUND));
     }
 
 }

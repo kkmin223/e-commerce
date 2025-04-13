@@ -3,8 +3,8 @@ package kr.hhplus.be.server.domain.order;
 import kr.hhplus.be.server.domain.orderItem.OrderItem;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.user.User;
-import kr.hhplus.be.server.interfaces.common.exceptions.OrderProductNotFoundException;
-import kr.hhplus.be.server.interfaces.common.exceptions.UserNotFoundException;
+import kr.hhplus.be.server.interfaces.common.ErrorCode;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -34,12 +34,12 @@ public class Order {
 
     public static Order create(User user, Map<Product, Integer> productQuantities, LocalDateTime orderAt) {
         if (user == null) {
-            throw new UserNotFoundException();
+            throw new BusinessLogicException(ErrorCode.USER_NOT_FOUND);
         }
 
         if (productQuantities == null
             || productQuantities.isEmpty()) {
-            throw new OrderProductNotFoundException();
+            throw new BusinessLogicException(ErrorCode.ORDER_PRODUCT_NOT_FOUND);
         }
 
         List<OrderItem> orderItems = productQuantities.entrySet().stream()

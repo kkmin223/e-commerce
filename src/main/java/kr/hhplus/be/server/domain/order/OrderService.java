@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.domain.order;
 
-import kr.hhplus.be.server.interfaces.common.exceptions.OrderProductNotFoundException;
-import kr.hhplus.be.server.interfaces.common.exceptions.UserNotFoundException;
+import kr.hhplus.be.server.interfaces.common.ErrorCode;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,12 +13,12 @@ public class OrderService {
 
     public Order createOrder(OrderCommand.CreateOrder command) {
         if (command.getOrderUser() == null) {
-            throw new UserNotFoundException();
+            throw new BusinessLogicException(ErrorCode.USER_NOT_FOUND);
         }
 
         if (command.getProductQuantities() == null
             || command.getProductQuantities().isEmpty()) {
-            throw new OrderProductNotFoundException();
+            throw new BusinessLogicException(ErrorCode.ORDER_PRODUCT_NOT_FOUND);
         }
 
         Order order = Order.create(command.getOrderUser(), command.getProductQuantities(), command.getOrderAt());

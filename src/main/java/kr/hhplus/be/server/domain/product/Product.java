@@ -1,8 +1,7 @@
 package kr.hhplus.be.server.domain.product;
 
-import kr.hhplus.be.server.interfaces.common.exceptions.InsufficientStockException;
-import kr.hhplus.be.server.interfaces.common.exceptions.InvalidIncreaseQuantityException;
-import kr.hhplus.be.server.interfaces.common.exceptions.InvalidReduceQuantityException;
+import kr.hhplus.be.server.interfaces.common.ErrorCode;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,19 +25,19 @@ public class Product {
 
     public void reduceQuantity(Integer quantity) {
         if (quantity <= 0) {
-            throw new InvalidReduceQuantityException();
+            throw new BusinessLogicException(ErrorCode.INVALID_REDUCE_QUANTITY);
         }
 
         this.quantity -= quantity;
 
         if (this.quantity < 0) {
-            throw new InsufficientStockException();
+            throw new BusinessLogicException(ErrorCode.INSUFFICIENT_STOCK);
         }
     }
 
     public void increaseQuantity(Integer quantity) {
         if (quantity <= 0) {
-            throw new InvalidIncreaseQuantityException();
+            throw new BusinessLogicException(ErrorCode.INVALID_INCREASE_QUANTITY);
         }
 
         this.quantity += quantity;

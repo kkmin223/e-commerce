@@ -3,14 +3,14 @@ package kr.hhplus.be.server.interfaces.common.exceptions;
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
 import org.springframework.http.HttpStatus;
 
-public class CustomException extends RuntimeException {
+public class BusinessLogicException extends RuntimeException {
     private final ErrorCode errorCode;
     private final HttpStatus status;
 
-    public CustomException(ErrorCode errorCode, HttpStatus status) {
+    public BusinessLogicException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
-        this.status = status;
+        this.status = HttpStatus.BAD_REQUEST;
     }
 
     public String getCode() {

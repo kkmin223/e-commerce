@@ -2,8 +2,8 @@ package kr.hhplus.be.server.domain.couponItem;
 
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.user.User;
-import kr.hhplus.be.server.interfaces.common.exceptions.CouponAlreadyUsedException;
-import kr.hhplus.be.server.interfaces.common.exceptions.InsufficientCouponQuantityException;
+import kr.hhplus.be.server.interfaces.common.ErrorCode;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,7 +27,7 @@ public class CouponItem {
 
     public Integer applyCoupon(Integer amount) {
         if (isUsed) {
-            throw new CouponAlreadyUsedException();
+            throw new BusinessLogicException(ErrorCode.COUPON_ALREADY_USED);
         }
 
         Integer appliedAmount = coupon.apply(amount);
@@ -41,7 +41,7 @@ public class CouponItem {
 
     public static CouponItem issue(User user, Coupon coupon) {
         if (!coupon.canIssue()) {
-            throw new InsufficientCouponQuantityException();
+            throw new BusinessLogicException(ErrorCode.INSUFFICIENT_COUPON_QUANTITY);
         }
 
         coupon.decreaseRemainingQuantity();

@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.domain.couponItem;
 
-import kr.hhplus.be.server.interfaces.common.exceptions.CouponNotFoundException;
-import kr.hhplus.be.server.interfaces.common.exceptions.UserNotFoundException;
+import kr.hhplus.be.server.interfaces.common.ErrorCode;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,11 +17,11 @@ public class CouponItemService {
 
     public CouponItem issueCouponItem(CouponItemCommand.Issue command) {
         if (command.getUser() == null) {
-            throw new UserNotFoundException();
+            throw new BusinessLogicException(ErrorCode.USER_NOT_FOUND);
         }
 
         if (command.getCoupon() == null) {
-            throw new CouponNotFoundException();
+            throw new BusinessLogicException(ErrorCode.COUPON_NOT_FOUND);
         }
 
         CouponItem issuedCouponItem = CouponItem.issue(command.getUser(), command.getCoupon());

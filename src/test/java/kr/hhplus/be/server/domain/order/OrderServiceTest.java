@@ -4,9 +4,7 @@ import kr.hhplus.be.server.domain.orderItem.OrderItem;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
-import kr.hhplus.be.server.interfaces.common.exceptions.InsufficientStockException;
-import kr.hhplus.be.server.interfaces.common.exceptions.OrderProductNotFoundException;
-import kr.hhplus.be.server.interfaces.common.exceptions.UserNotFoundException;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -90,11 +88,11 @@ class OrderServiceTest {
         OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, orderAt);
 
         // when
-        InsufficientStockException exception = assertThrows(InsufficientStockException.class, () -> orderService.createOrder(command));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> orderService.createOrder(command));
 
         // then
         assertThat(exception)
-            .extracting(InsufficientStockException::getCode, InsufficientStockException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INSUFFICIENT_STOCK.getCode(), ErrorCode.INSUFFICIENT_STOCK.getMessage());
 
         verify(orderRepository, never()).save(any(Order.class));
@@ -121,11 +119,11 @@ class OrderServiceTest {
         OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, orderAt);
 
         // when
-        UserNotFoundException exception = Assertions.assertThrows(UserNotFoundException.class, () -> orderService.createOrder(command));
+        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> orderService.createOrder(command));
 
         // then
         assertThat(exception)
-            .extracting(UserNotFoundException::getCode, UserNotFoundException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.USER_NOT_FOUND.getCode(), ErrorCode.USER_NOT_FOUND.getMessage());
     }
 
@@ -141,11 +139,11 @@ class OrderServiceTest {
         OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, orderAt);
 
         // when
-        OrderProductNotFoundException exception = Assertions.assertThrows(OrderProductNotFoundException.class, () -> orderService.createOrder(command));
+        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> orderService.createOrder(command));
 
         // then
         assertThat(exception)
-            .extracting(OrderProductNotFoundException::getCode, OrderProductNotFoundException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.ORDER_PRODUCT_NOT_FOUND.getCode(), ErrorCode.ORDER_PRODUCT_NOT_FOUND.getMessage());
     }
 
@@ -161,11 +159,11 @@ class OrderServiceTest {
         OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, orderAt);
 
         // when
-        OrderProductNotFoundException exception = Assertions.assertThrows(OrderProductNotFoundException.class, () -> orderService.createOrder(command));
+        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> orderService.createOrder(command));
 
         // then
         assertThat(exception)
-            .extracting(OrderProductNotFoundException::getCode, OrderProductNotFoundException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.ORDER_PRODUCT_NOT_FOUND.getCode(), ErrorCode.ORDER_PRODUCT_NOT_FOUND.getMessage());
     }
 }

@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.domain.amount;
 
-import kr.hhplus.be.server.interfaces.common.exceptions.BelowMinimumBalancePolicyException;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -27,7 +27,7 @@ class AmountTest {
     @ValueSource(ints = {-1, -100})
     void 잔액을_생성할_때_0원_아래_금액은_생성할_수_없습니다(Integer inputAmount) {
         // when
-        BelowMinimumBalancePolicyException exception = assertThrows(BelowMinimumBalancePolicyException.class, () -> Amount.of(inputAmount));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> Amount.of(inputAmount));
 
         // then
         assertThat(exception.getMessage())
@@ -41,7 +41,7 @@ class AmountTest {
         Amount amount = Amount.of(100);
 
         // when
-        BelowMinimumBalancePolicyException exception = assertThrows(BelowMinimumBalancePolicyException.class, () -> amount.minus(deductAmount));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> amount.minus(deductAmount));
 
         // then
         assertThat(exception.getMessage())

@@ -1,8 +1,7 @@
 package kr.hhplus.be.server.domain.coupon;
 
-import kr.hhplus.be.server.interfaces.common.exceptions.CouponNotFoundException;
-import kr.hhplus.be.server.interfaces.common.exceptions.InsufficientCouponQuantityException;
-import kr.hhplus.be.server.interfaces.common.exceptions.InvalidCouponIdException;
+import kr.hhplus.be.server.interfaces.common.ErrorCode;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,14 +14,14 @@ public class CouponService {
     public Coupon getIssuableCoupon(CouponCommand.Get command) {
         if (command.getCouponId() == null
             || command.getCouponId() <= 0) {
-            throw new InvalidCouponIdException();
+            throw new BusinessLogicException(ErrorCode.INVALID_COUPON_ID);
         }
 
         Coupon coupon = couponRepository.getCoupon(command.getCouponId())
-            .orElseThrow(CouponNotFoundException::new);
+            .orElseThrow(() -> new BusinessLogicException(ErrorCode.COUPON_NOT_FOUND));
 
         if (!coupon.canIssue()) {
-            throw new InsufficientCouponQuantityException();
+            throw new BusinessLogicException(ErrorCode.INSUFFICIENT_COUPON_QUANTITY);
         }
 
         return coupon;

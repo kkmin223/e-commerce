@@ -3,8 +3,7 @@ package kr.hhplus.be.server.domain.couponItem;
 import kr.hhplus.be.server.domain.coupon.TestCoupon;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
-import kr.hhplus.be.server.interfaces.common.exceptions.CouponNotFoundException;
-import kr.hhplus.be.server.interfaces.common.exceptions.UserNotFoundException;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -54,11 +53,11 @@ class CouponItemServiceTest {
         CouponItemCommand.Issue command = CouponItemCommand.Issue.of(coupon, user);
 
         // when
-        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> couponItemService.issueCouponItem(command));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> couponItemService.issueCouponItem(command));
 
         // then
         assertThat(exception)
-            .extracting(UserNotFoundException::getCode, UserNotFoundException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.USER_NOT_FOUND.getCode(), ErrorCode.USER_NOT_FOUND.getMessage());
 
         verify(couponItemRepository, never()).save(Mockito.any(CouponItem.class));
@@ -73,11 +72,11 @@ class CouponItemServiceTest {
         CouponItemCommand.Issue command = CouponItemCommand.Issue.of(coupon, user);
 
         // when
-        CouponNotFoundException exception = assertThrows(CouponNotFoundException.class, () -> couponItemService.issueCouponItem(command));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> couponItemService.issueCouponItem(command));
 
         // then
         assertThat(exception)
-            .extracting(CouponNotFoundException::getCode, CouponNotFoundException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.COUPON_NOT_FOUND.getCode(), ErrorCode.COUPON_NOT_FOUND.getMessage());
 
         verify(couponItemRepository, never()).save(Mockito.any(CouponItem.class));

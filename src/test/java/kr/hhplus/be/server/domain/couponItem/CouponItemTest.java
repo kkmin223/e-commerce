@@ -5,8 +5,7 @@ import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.TestCoupon;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
-import kr.hhplus.be.server.interfaces.common.exceptions.CouponAlreadyUsedException;
-import kr.hhplus.be.server.interfaces.common.exceptions.InsufficientCouponQuantityException;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -56,11 +55,11 @@ class CouponItemTest {
 
         CouponItem couponItem = CouponItem.of(user, amountCoupon, Boolean.TRUE);
         // when
-        CouponAlreadyUsedException exception = Assertions.assertThrows(CouponAlreadyUsedException.class, () -> couponItem.applyCoupon(amount));
+        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> couponItem.applyCoupon(amount));
 
         // then
         assertThat(exception)
-            .extracting(CouponAlreadyUsedException::getCode, CouponAlreadyUsedException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.COUPON_ALREADY_USED.getCode(), ErrorCode.COUPON_ALREADY_USED.getMessage());
     }
 
@@ -92,11 +91,11 @@ class CouponItemTest {
         User user = User.of(1L, 10_000);
 
         // when
-        InsufficientCouponQuantityException exception = Assertions.assertThrows(InsufficientCouponQuantityException.class, () -> CouponItem.issue(user, coupon));
+        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> CouponItem.issue(user, coupon));
 
         // then
         assertThat(exception)
-            .extracting(InsufficientCouponQuantityException::getCode, InsufficientCouponQuantityException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INSUFFICIENT_COUPON_QUANTITY.getCode(), ErrorCode.INSUFFICIENT_COUPON_QUANTITY.getMessage());
 
     }

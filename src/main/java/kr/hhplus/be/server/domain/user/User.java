@@ -2,8 +2,8 @@ package kr.hhplus.be.server.domain.user;
 
 import kr.hhplus.be.server.domain.amount.Amount;
 import kr.hhplus.be.server.domain.couponItem.CouponItem;
-import kr.hhplus.be.server.interfaces.common.exceptions.InvalidChargeAmountException;
-import kr.hhplus.be.server.interfaces.common.exceptions.InvalidDeductAmountException;
+import kr.hhplus.be.server.interfaces.common.ErrorCode;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,14 +35,14 @@ public class User {
 
     public void chargeAmount(Integer amount) {
         if (amount <= 0) {
-            throw new InvalidChargeAmountException();
+            throw new BusinessLogicException(ErrorCode.INVALID_CHARGE_AMOUNT);
         }
         this.amount = this.amount.plus(amount);
     }
 
     public void deductAmount(Integer amount) {
         if (amount <= 0) {
-            throw new InvalidDeductAmountException();
+            throw new BusinessLogicException(ErrorCode.INVALID_DEDUCT_AMOUNT);
         }
         this.amount = this.amount.minus(amount);
     }

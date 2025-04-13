@@ -1,7 +1,8 @@
 package kr.hhplus.be.server.domain.orderItem;
 
 import kr.hhplus.be.server.domain.product.Product;
-import kr.hhplus.be.server.interfaces.common.exceptions.InsufficientStockException;
+import kr.hhplus.be.server.interfaces.common.ErrorCode;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -22,7 +23,7 @@ public class OrderItem {
 
     public static OrderItem create(Product product, Integer quantity) {
         if (!product.canOrder(quantity)) {
-            throw new InsufficientStockException();
+            throw new BusinessLogicException(ErrorCode.INSUFFICIENT_STOCK);
         }
 
         return new OrderItem(product, quantity);

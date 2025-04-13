@@ -2,7 +2,7 @@ package kr.hhplus.be.server;
 
 import jakarta.validation.ConstraintViolationException;
 import kr.hhplus.be.server.interfaces.common.ErrorResult;
-import kr.hhplus.be.server.interfaces.common.exceptions.CustomException;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -38,8 +38,8 @@ public class ApiControllerAdvice {
     }
 
     // Custom Exception 에러
-    @ExceptionHandler(CustomException.class)
-    public ResponseEntity<ErrorResult> handleCustomException(CustomException ex) {
+    @ExceptionHandler(BusinessLogicException.class)
+    public ResponseEntity<ErrorResult> handleCustomException(BusinessLogicException ex) {
         log.error(ex.getMessage(), ex);
         return ResponseEntity.status(ex.getStatus()).body(
             new ErrorResult(ex.getCode(), ex.getMessage())

@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.coupon;
 
-import kr.hhplus.be.server.interfaces.common.exceptions.InsufficientCouponQuantityException;
+import kr.hhplus.be.server.interfaces.common.ErrorCode;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,7 +31,7 @@ public abstract class Coupon {
 
     public void decreaseRemainingQuantity() {
         if (remainingQuantity == 0) {
-            throw new InsufficientCouponQuantityException();
+            throw new BusinessLogicException(ErrorCode.INSUFFICIENT_COUPON_QUANTITY);
         }
 
         this.remainingQuantity--;

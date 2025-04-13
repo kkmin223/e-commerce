@@ -3,7 +3,8 @@ package kr.hhplus.be.server.domain.payment;
 import kr.hhplus.be.server.domain.couponItem.CouponItem;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.user.User;
-import kr.hhplus.be.server.interfaces.common.exceptions.InsufficientBalanceException;
+import kr.hhplus.be.server.interfaces.common.ErrorCode;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -33,7 +34,7 @@ public class Payment {
 
     public void processPayment() {
         if (!this.user.canPay(this.paymentAmount)) {
-            throw new InsufficientBalanceException();
+            throw new BusinessLogicException(ErrorCode.INSUFFICIENT_BALANCE);
         }
         user.deductAmount(this.paymentAmount);
         order.completeOrder(this.paymentAmount);
