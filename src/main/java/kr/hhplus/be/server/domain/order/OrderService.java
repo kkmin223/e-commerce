@@ -21,7 +21,7 @@ public class OrderService {
             throw new BusinessLogicException(ErrorCode.ORDER_PRODUCT_NOT_FOUND);
         }
 
-        Order order = Order.create(command.getOrderUser(), command.getProductQuantities(), command.getOrderAt());
+        Order order = Order.create(command.getOrderUser(), command.getProductQuantities());
 
         return orderRepository.save(order);
     }

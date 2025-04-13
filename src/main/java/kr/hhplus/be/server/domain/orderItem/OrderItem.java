@@ -1,5 +1,8 @@
 package kr.hhplus.be.server.domain.orderItem;
 
+import jakarta.persistence.*;
+import kr.hhplus.be.server.domain.common.entity.BaseEntity;
+import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
 import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
@@ -8,10 +11,22 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class OrderItem {
+@Entity
+public class OrderItem extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
     private Product product;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", nullable = false)
+    private Order order;
+
     private Integer orderQuantity;
+
     private Integer subTotalAmount;
 
     private OrderItem(Product product, Integer orderQuantity) {
@@ -27,5 +42,9 @@ public class OrderItem {
         }
 
         return new OrderItem(product, quantity);
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
     }
 }

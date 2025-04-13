@@ -19,7 +19,7 @@ class AmountTest {
         Amount amount = Amount.of(inputAmount);
 
         // then
-        assertThat(amount.amount())
+        assertThat(amount.getAmount())
             .isEqualTo(inputAmount);
     }
 

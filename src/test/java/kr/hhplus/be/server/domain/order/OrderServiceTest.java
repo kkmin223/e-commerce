@@ -49,11 +49,9 @@ class OrderServiceTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        LocalDateTime orderAt = LocalDateTime.now();
+        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities);
 
-        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, orderAt);
-
-        Mockito.when(orderRepository.save(any(Order.class))).thenReturn(Order.create(user, productQuantities, orderAt));
+        Mockito.when(orderRepository.save(any(Order.class))).thenReturn(Order.create(user, productQuantities));
 
         // when
         Order order = orderService.createOrder(command);
@@ -68,8 +66,8 @@ class OrderServiceTest {
             );
 
         assertThat(order)
-            .extracting(Order::getTotalAmount, Order::getOrderAt, Order::getStatus)
-            .containsExactly(product1.getPrice() * orderQuantity1 + product2.getPrice() * orderQuantity2, orderAt, OrderStatus.PAYMENT_PENDING);
+            .extracting(Order::getTotalAmount, Order::getStatus)
+            .containsExactly(product1.getPrice() * orderQuantity1 + product2.getPrice() * orderQuantity2, OrderStatus.PAYMENT_PENDING);
     }
 
     @Test
@@ -83,9 +81,7 @@ class OrderServiceTest {
         Map<Product, Integer> productQuantities = new HashMap<>();
         productQuantities.put(product1, orderQuantity1);
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, orderAt);
+        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities);
 
         // when
         BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> orderService.createOrder(command));
@@ -114,9 +110,7 @@ class OrderServiceTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, orderAt);
+        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities);
 
         // when
         BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> orderService.createOrder(command));
@@ -134,9 +128,7 @@ class OrderServiceTest {
 
         Map<Product, Integer> productQuantities = null;
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, orderAt);
+        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities);
 
         // when
         BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> orderService.createOrder(command));
@@ -154,9 +146,7 @@ class OrderServiceTest {
 
         Map<Product, Integer> productQuantities = new HashMap<>();
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, orderAt);
+        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities);
 
         // when
         BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> orderService.createOrder(command));

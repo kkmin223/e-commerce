@@ -1,5 +1,7 @@
 package kr.hhplus.be.server.domain.couponItem;
 
+import jakarta.persistence.*;
+import kr.hhplus.be.server.domain.common.entity.BaseEntity;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
@@ -9,10 +11,21 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class CouponItem {
+@Entity
+public class CouponItem extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
     private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
     private Coupon coupon;
+
+    @Column(nullable = false)
     private Boolean isUsed;
 
     private CouponItem(User user, Coupon coupon, Boolean isUsed) {

@@ -22,7 +22,7 @@ public class OrderResult {
         private OrderStatus status;
 
         public static OrderAndPay createdBy(Order order) {
-            return new OrderAndPay(order.getId(), order.getTotalAmount(), order.getPaymentAmount(), order.getOrderAt(), order.getStatus());
+            return new OrderAndPay(order.getId(), order.getTotalAmount(), order.getPaymentAmount(), order.getCreatedAt(), order.getStatus());
         }
     }
 }

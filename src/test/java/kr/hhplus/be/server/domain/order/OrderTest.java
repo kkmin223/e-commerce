@@ -33,10 +33,8 @@ class OrderTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
         // when
-        Order order = Order.create(user, productQuantities, orderAt);
+        Order order = Order.create(user, productQuantities);
 
         // then
         assertThat(order.getOrderItems())
@@ -48,8 +46,8 @@ class OrderTest {
             );
 
         assertThat(order)
-            .extracting(Order::getTotalAmount, Order::getOrderAt, Order::getStatus)
-            .containsExactly(product1.getPrice() * orderQuantity1 + product2.getPrice() * orderQuantity2, orderAt, OrderStatus.PAYMENT_PENDING);
+            .extracting(Order::getTotalAmount, Order::getStatus)
+            .containsExactly(product1.getPrice() * orderQuantity1 + product2.getPrice() * orderQuantity2, OrderStatus.PAYMENT_PENDING);
     }
 
     @Test
@@ -63,10 +61,8 @@ class OrderTest {
         Map<Product, Integer> productQuantities = new HashMap<>();
         productQuantities.put(product1, orderQuantity1);
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
         // when
-        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> Order.create(user, productQuantities, orderAt));
+        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> Order.create(user, productQuantities));
 
         // then
         assertThat(exception)
@@ -85,10 +81,8 @@ class OrderTest {
         Map<Product, Integer> productQuantities = new HashMap<>();
         productQuantities.put(product1, orderQuantity1);
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
         // when
-        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> Order.create(user, productQuantities, orderAt));
+        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> Order.create(user, productQuantities));
 
         // then
         assertThat(exception)
@@ -104,10 +98,9 @@ class OrderTest {
 
 
         Map<Product, Integer> productQuantities = null;
-        LocalDateTime orderAt = LocalDateTime.now();
 
         // when
-        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> Order.create(user, productQuantities, orderAt));
+        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> Order.create(user, productQuantities));
 
         // then
         assertThat(exception)
@@ -121,12 +114,10 @@ class OrderTest {
         User user = User.of(1L, 1_000_000);
         Integer stockQuantity1 = 10;
 
-
         Map<Product, Integer> productQuantities = new HashMap<>();
-        LocalDateTime orderAt = LocalDateTime.now();
 
         // when
-        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> Order.create(user, productQuantities, orderAt));
+        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> Order.create(user, productQuantities));
 
         // then
         assertThat(exception)
@@ -150,9 +141,7 @@ class OrderTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        Order order = Order.create(user, productQuantities, orderAt);
+        Order order = Order.create(user, productQuantities);
         // when
         order.completeOrder(product1.getPrice() * orderQuantity1 + product2.getPrice() * orderQuantity2);
 

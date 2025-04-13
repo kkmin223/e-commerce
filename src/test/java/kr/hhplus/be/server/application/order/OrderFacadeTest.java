@@ -51,13 +51,12 @@ class OrderFacadeTest {
         Long couponItemId = 1L;
         Long productId = 1L;
         OrderCriteria.OrderProduct orderProduct = OrderCriteria.OrderProduct.of(productId, 1);
-        LocalDateTime orderAt = LocalDateTime.now();
-        OrderCriteria.OrderAndPay criteria = OrderCriteria.OrderAndPay.of(1L, 1L, List.of(orderProduct), orderAt);
+        OrderCriteria.OrderAndPay criteria = OrderCriteria.OrderAndPay.of(1L, 1L, List.of(orderProduct));
 
         User user = User.of(userId, 1_000_000);
         Product product = Product.of(productId, "상품", 10, 1_000);
         Map<Product, Integer> productsWithQuantities = Map.of(product, 1);
-        Order order = Order.create(user, productsWithQuantities, orderAt);
+        Order order = Order.create(user, productsWithQuantities);
         CouponItem couponItem = CouponItem.of(user, AmountCoupon.of("쿠폰", 1, 100), false);
         Payment payment = Payment.create(order, user);
 

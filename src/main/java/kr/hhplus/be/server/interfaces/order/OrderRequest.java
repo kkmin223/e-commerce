@@ -34,11 +34,10 @@ public class OrderRequest {
         )
         private List<OrderProduct> orderProducts;
 
-        public OrderCriteria.OrderAndPay toCriteria(LocalDateTime orderAt) {
+        public OrderCriteria.OrderAndPay toCriteria() {
             return OrderCriteria.OrderAndPay.of(userId
                 , couponItemId
-                , orderProducts.stream().map(orderProduct -> OrderCriteria.OrderProduct.of(orderProduct.productId, orderProduct.quantity)).toList()
-                , orderAt);
+                , orderProducts.stream().map(orderProduct -> OrderCriteria.OrderProduct.of(orderProduct.productId, orderProduct.quantity)).toList());
         }
     }
 

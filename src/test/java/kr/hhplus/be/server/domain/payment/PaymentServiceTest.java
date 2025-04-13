@@ -47,9 +47,7 @@ class PaymentServiceTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        Order order = Order.create(user, productQuantities, orderAt);
+        Order order = Order.create(user, productQuantities);
 
         PaymentCommand.CreateAndProcess command = PaymentCommand.CreateAndProcess.of(user, order, null);
 
@@ -82,9 +80,7 @@ class PaymentServiceTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        Order order = Order.create(user, productQuantities, orderAt);
+        Order order = Order.create(user, productQuantities);
         AmountCoupon coupon = AmountCoupon.of("정액 쿠폰", 10, 1000);
         CouponItem couponItem = CouponItem.of(user, coupon, Boolean.FALSE);
 
@@ -123,9 +119,7 @@ class PaymentServiceTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        Order order = Order.create(user, productQuantities, orderAt);
+        Order order = Order.create(user, productQuantities);
 
         PaymentCommand.CreateAndProcess command = PaymentCommand.CreateAndProcess.of(user, order, null);
 

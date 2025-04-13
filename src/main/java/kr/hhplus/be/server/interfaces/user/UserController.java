@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -45,12 +46,7 @@ public class UserController implements UserApi {
     @GetMapping("/{id}/coupons")
     public ResponseEntity<ApiResult<UserResponse.UserCoupon>> getUserCoupons(long id) {
         User user = userService.getUser(UserCommand.Get.of(id));
-        List<CouponResponse.Coupon> coupons = user.getCouponItems().stream().map(couponItem ->
-            CouponResponse.Coupon.of(couponItem.getId(),
-                couponItem.getCoupon().getTitle(),
-                couponItem.getIsUsed(),
-                couponItem.getCoupon().getDiscountLabel(),
-                couponItem.getCoupon().getCouponType())).toList();
+        List<CouponResponse.Coupon> coupons = new ArrayList<>();
 
         return ResponseEntity.ok(
             ApiResult.of(SuccessCode.LIST_USER_COUPONS,

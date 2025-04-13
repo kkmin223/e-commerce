@@ -1,10 +1,14 @@
 package kr.hhplus.be.server.domain.coupon;
 
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
+@Entity
+@DiscriminatorValue("PERCENTAGE")
 public class PercentageCoupon extends Coupon {
     private Integer discountRate;
 

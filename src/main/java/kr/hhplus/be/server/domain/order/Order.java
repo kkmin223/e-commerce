@@ -1,5 +1,7 @@
 package kr.hhplus.be.server.domain.order;
 
+import jakarta.persistence.*;
+import kr.hhplus.be.server.domain.common.entity.BaseEntity;
 import kr.hhplus.be.server.domain.orderItem.OrderItem;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.user.User;
@@ -8,31 +10,47 @@ import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
 @Getter
 @NoArgsConstructor
-public class Order {
+@Entity
+@Table(name = "orders")
+public class Order extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private Integer totalAmount;
+
     private Integer paymentAmount;
+
+    @Column(nullable = false)
     private OrderStatus status;
-    private LocalDateTime orderAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "order")
     List<OrderItem> orderItems;
 
-    private Order(User user, List<OrderItem> orderItems, LocalDateTime orderAt) {
+    private Order(User user, List<OrderItem> orderItems) {
         this.user = user;
         this.orderItems = orderItems;
         this.totalAmount = calculateTotalAmount();
         this.paymentAmount = null;
         this.status = OrderStatus.PAYMENT_PENDING;
-        this.orderAt = orderAt;
+
+        for (OrderItem orderItem : orderItems) {
+            orderItem.setOrder(this); // 여기서 역방향 연관관계 세팅
+        }
+
     }
 
-    public static Order create(User user, Map<Product, Integer> productQuantities, LocalDateTime orderAt) {
+    public static Order create(User user, Map<Product, Integer> productQuantities) {
         if (user == null) {
             throw new BusinessLogicException(ErrorCode.USER_NOT_FOUND);
         }
@@ -46,7 +64,7 @@ public class Order {
             .map(entry -> OrderItem.create(entry.getKey(), entry.getValue()))
             .toList();
 
-        return new Order(user, orderItems, orderAt);
+        return new Order(user, orderItems);
     }
 
     private Integer calculateTotalAmount() {

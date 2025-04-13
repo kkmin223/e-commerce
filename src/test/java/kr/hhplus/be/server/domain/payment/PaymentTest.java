@@ -36,9 +36,7 @@ class PaymentTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        Order order = Order.create(user, productQuantities, orderAt);
+        Order order = Order.create(user, productQuantities);
         // when
         Payment payment = Payment.create(order, user);
 
@@ -64,9 +62,7 @@ class PaymentTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        Order order = Order.create(user, productQuantities, orderAt);
+        Order order = Order.create(user, productQuantities);
         AmountCoupon coupon = AmountCoupon.of("정액 쿠폰", 10, 1000);
         CouponItem couponItem = CouponItem.of(user, coupon, Boolean.FALSE);
 
@@ -96,9 +92,7 @@ class PaymentTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        Order order = Order.create(user, productQuantities, orderAt);
+        Order order = Order.create(user, productQuantities);
         Coupon coupon = AmountCoupon.of("정액 쿠폰", 10, 1000);
         CouponItem couponItem = CouponItem.of(user, coupon, Boolean.TRUE);
 
@@ -129,9 +123,7 @@ class PaymentTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        Order order = Order.create(user, productQuantities, orderAt);
+        Order order = Order.create(user, productQuantities);
         Payment payment = Payment.create(order, user);
 
         // when
@@ -162,9 +154,7 @@ class PaymentTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        Order order = Order.create(user, productQuantities, orderAt);
+        Order order = Order.create(user, productQuantities);
         Payment payment = Payment.create(order, user);
         // when
         BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> payment.processPayment());
