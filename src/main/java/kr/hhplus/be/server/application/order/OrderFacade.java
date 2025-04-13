@@ -37,12 +37,16 @@ public class OrderFacade {
     public OrderResult.OrderAndPay orderAndPay(OrderCriteria.OrderAndPay criteria) {
 
         User user = userService.getUser(UserCommand.Get.of(criteria.getUserId()));
+
         Map<Product, Integer> productsWithQuantities = productService.findProductsWithQuantities(ProductCommand.FindProductsWithQuantity.of(criteria.getOrderProducts()));
+
         Order order = orderService.createOrder(OrderCommand.CreateOrder.of(user, productsWithQuantities, criteria.getOrderAt()));
+
         CouponItem couponItem = null;
         if (criteria.getCouponItemId() != null) {
             couponItem = couponItemService.getCouponItem(CouponItemCommand.Get.of(criteria.getCouponItemId()));
         }
+
         Payment payment = paymentService.createAndProcess(PaymentCommand.CreateAndProcess.of(user, order, couponItem));
 
         dataPlatform.sendData(order);

@@ -1,10 +1,11 @@
 package kr.hhplus.be.server.domain.coupon;
 
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class AmountCouponTest {
 
@@ -59,4 +60,35 @@ class AmountCouponTest {
         assertThat(appliedAmount)
             .isEqualTo(0);
     }
+
+    @Test
+    void 쿠폰_타입을_조회하면_AMOUNT를_반환한다() {
+        // given
+        String title = "쿠폰";
+        Integer initialQuantity = 100;
+        Integer discountAmount = 1_000;
+        AmountCoupon coupon = AmountCoupon.of(title, initialQuantity, discountAmount);
+
+        // when
+        CouponType couponType = coupon.getCouponType();
+
+        // then
+        assertThat(couponType).isEqualTo(CouponType.AMOUNT);
+    }
+
+    @ParameterizedTest
+    @ValueSource(ints = {100, 1_000, 10_000, 100_000})
+    void 쿠폰_라벨_정보를_조회하면_X원_할인을_반환한다(Integer discountAmount) {
+        // given
+        String title = "쿠폰";
+        Integer initialQuantity = 100;
+        AmountCoupon coupon = AmountCoupon.of(title, initialQuantity, discountAmount);
+
+        // when
+        String discountLabel = coupon.getDiscountLabel();
+
+        // then
+        assertThat(discountLabel).isEqualTo(String.format("₩%,d 할인", discountAmount));
+    }
+
 }

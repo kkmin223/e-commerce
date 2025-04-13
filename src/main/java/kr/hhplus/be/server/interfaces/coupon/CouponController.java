@@ -1,6 +1,8 @@
 package kr.hhplus.be.server.interfaces.coupon;
 
-import kr.hhplus.be.server.domain.coupon.CouponType;
+import kr.hhplus.be.server.application.coupon.CouponCriteria;
+import kr.hhplus.be.server.application.coupon.CouponFacade;
+import kr.hhplus.be.server.application.coupon.CouponResult;
 import kr.hhplus.be.server.interfaces.common.ApiResult;
 import kr.hhplus.be.server.interfaces.common.SuccessCode;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +17,19 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 @RequestMapping("/coupons")
 public class CouponController implements CouponApi {
+
+    private final CouponFacade couponFacade;
+
     @Override
     @PostMapping("/{id}/issue")
     public ResponseEntity<ApiResult<CouponResponse.Coupon>> issueCoupon(long id, CouponRequest.Issue issueRequest) {
-        return ResponseEntity.ok(ApiResult.of(SuccessCode.ISSUE_COUPON, new CouponResponse.Coupon(1L, "쿠폰1", true, 1000, CouponType.AMOUNT)));
+
+        CouponResult.Issue issueResult = couponFacade.IssueCoupon(CouponCriteria.Issue.of(id, issueRequest.getUserId()));
+
+        return ResponseEntity.ok(
+            ApiResult.of(SuccessCode.ISSUE_COUPON,
+                CouponResponse.Coupon.of(issueResult.getId(), issueResult.getCouponName(), issueResult.getIsUsed(), issueResult.getDiscountLabel(), issueResult.getCouponType())
+            )
+        );
     }
 }
