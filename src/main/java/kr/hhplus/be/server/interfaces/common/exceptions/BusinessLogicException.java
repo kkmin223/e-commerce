@@ -25,8 +25,4 @@ public class BusinessLogicException extends RuntimeException {
     public HttpStatus getStatus() {
         return status;
     }
-
-    public ErrorCode getErrorCode() {
-        return errorCode;
-    }
 }
