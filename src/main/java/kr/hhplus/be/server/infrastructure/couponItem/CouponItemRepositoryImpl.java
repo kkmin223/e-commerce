@@ -2,17 +2,24 @@ package kr.hhplus.be.server.infrastructure.couponItem;
 
 import kr.hhplus.be.server.domain.couponItem.CouponItem;
 import kr.hhplus.be.server.domain.couponItem.CouponItemRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
+@RequiredArgsConstructor
 @Repository
 public class CouponItemRepositoryImpl implements CouponItemRepository {
+
+    private final CouponItemJpaRepository couponItemJpaRepository;
+
     @Override
-    public CouponItem getCouponItem(Long id) {
-        return null;
+    public Optional<CouponItem> getCouponItem(Long id) {
+        return couponItemJpaRepository.findById(id);
     }
 
     @Override
     public CouponItem save(CouponItem couponItem) {
-        return null;
+        return couponItemJpaRepository.save(couponItem);
     }
 }
