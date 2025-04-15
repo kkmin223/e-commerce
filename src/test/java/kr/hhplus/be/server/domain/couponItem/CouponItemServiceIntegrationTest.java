@@ -5,15 +5,15 @@ import kr.hhplus.be.server.domain.coupon.CouponRepository;
 import kr.hhplus.be.server.domain.coupon.TestCoupon;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.domain.user.UserRepository;
-import kr.hhplus.be.server.interfaces.common.ErrorCode;
-import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Transactional
 @SpringBootTest
@@ -49,57 +49,6 @@ class CouponItemServiceIntegrationTest {
     }
 
     @Test
-    void 쿠폰_아이템을_발급할_때_사용자가_null인_경우_USER_NOT_FOUND_예외가_발생한다() {
-        // given
-        TestCoupon coupon = new TestCoupon("쿠폰", 10);
-        User user = null;
-
-        CouponItemCommand.Issue command = CouponItemCommand.Issue.of(coupon, user);
-
-        // when
-        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> couponItemService.issueCouponItem(command));
-
-        // then
-        assertThat(exception)
-            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
-            .containsExactly(ErrorCode.USER_NOT_FOUND.getCode(), ErrorCode.USER_NOT_FOUND.getMessage());
-    }
-
-    @Test
-    void 쿠폰_아이템을_발급할_때_쿠폰이_null인_경우_COUPON_NOT_FOUND_예외가_발생한다() {
-        // given
-        TestCoupon coupon = null;
-        User user = User.of(1L, 1_000);
-
-        CouponItemCommand.Issue command = CouponItemCommand.Issue.of(coupon, user);
-
-        // when
-        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> couponItemService.issueCouponItem(command));
-
-        // then
-        assertThat(exception)
-            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
-            .containsExactly(ErrorCode.COUPON_NOT_FOUND.getCode(), ErrorCode.COUPON_NOT_FOUND.getMessage());
-    }
-
-    @Test
-    void 쿠폰_수량이_0인_쿠폰으로_쿠폰_아이템을_발급하면_INSUFFICIENT_COUPON_QUANTITY_예외가_발생한다() {
-        // given
-        Coupon savedCoupon = couponRepository.save(new TestCoupon("쿠폰", 0));
-        User savedUser = userRepository.save(User.of(1_000));
-
-        CouponItemCommand.Issue command = CouponItemCommand.Issue.of(savedCoupon, savedUser);
-
-        // when
-        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> couponItemService.issueCouponItem(command));
-
-        // then
-        assertThat(exception)
-            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
-            .containsExactly(ErrorCode.INSUFFICIENT_COUPON_QUANTITY.getCode(), ErrorCode.INSUFFICIENT_COUPON_QUANTITY.getMessage());
-    }
-
-    @Test
     void 쿠폰_아이템_식별자로_쿠폰_아이템을_조회한다() {
         // given
         Coupon savedCoupon = couponRepository.save(new TestCoupon("쿠폰", 10));
@@ -118,18 +67,26 @@ class CouponItemServiceIntegrationTest {
     }
 
     @Test
-    void 쿠폰_아이템_식별자에_해당하는_쿠폰_아이템이_없는_경우_COUPON_NOT_FOUND_예외가_발생한다() {
+    void 유저로_쿠폰_아이템을_조회한다() {
         // given
-        CouponItemCommand.Get command = CouponItemCommand.Get.of(1L);
+        User savedUser = userRepository.save(User.of( 1_000));
+        CouponItemCommand.FindByUser command = CouponItemCommand.FindByUser.of(savedUser);
+        Coupon savedCoupon = couponRepository.save(new TestCoupon("쿠폰", 10));
+
+        CouponItem couponItem1 = couponItemRepository.save(CouponItem.of(savedUser, savedCoupon, Boolean.FALSE));
+        CouponItem couponItem2 = couponItemRepository.save(CouponItem.of(savedUser, savedCoupon, Boolean.FALSE));
 
         // when
-        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> couponItemService.getCouponItem(command));
+        List<CouponItem> userCouponItems = couponItemService.findByUser(command);
 
         // then
-        assertThat(exception)
-            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
-            .containsExactly(ErrorCode.COUPON_NOT_FOUND.getCode(), ErrorCode.COUPON_NOT_FOUND.getMessage());
+        assertThat(userCouponItems)
+            .hasSize(2)
+            .extracting(CouponItem::getUser, CouponItem::getCoupon, CouponItem::getIsUsed)
+            .containsExactlyInAnyOrder(
+                Tuple.tuple(couponItem1.getUser(), couponItem1.getCoupon(), couponItem1.getIsUsed()),
+                Tuple.tuple(couponItem2.getUser(), couponItem2.getCoupon(), couponItem2.getIsUsed())
+            );
     }
-
 
 }

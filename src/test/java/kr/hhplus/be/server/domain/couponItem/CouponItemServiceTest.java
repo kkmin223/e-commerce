@@ -4,6 +4,7 @@ import kr.hhplus.be.server.domain.coupon.TestCoupon;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
 import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -11,6 +12,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -121,5 +123,43 @@ class CouponItemServiceTest {
             .containsExactly(ErrorCode.COUPON_NOT_FOUND.getCode(), ErrorCode.COUPON_NOT_FOUND.getMessage());
     }
 
+    @Test
+    void 유저로_쿠폰_아이템을_조회한다() {
+        // given
+        User user = User.of(1L, 1_000);
+        CouponItemCommand.FindByUser command = CouponItemCommand.FindByUser.of(user);
+        TestCoupon coupon = new TestCoupon("쿠폰", 10);
 
+        CouponItem couponItem1 = CouponItem.of(user, coupon, Boolean.FALSE);
+        CouponItem couponItem2 = CouponItem.of(user, coupon, Boolean.FALSE);
+
+        Mockito.when(couponItemRepository.findByUser(user)).thenReturn(List.of(couponItem1, couponItem2));
+
+        // when
+        List<CouponItem> userCouponItems = couponItemService.findByUser(command);
+
+        // then
+        assertThat(userCouponItems)
+            .hasSize(2)
+            .extracting(CouponItem::getUser, CouponItem::getCoupon, CouponItem::getIsUsed)
+            .containsExactlyInAnyOrder(
+                Tuple.tuple(couponItem1.getUser(), couponItem1.getCoupon(), couponItem1.getIsUsed()),
+                Tuple.tuple(couponItem2.getUser(), couponItem2.getCoupon(), couponItem2.getIsUsed())
+            );
+    }
+
+    @Test
+    void 유저로_쿠폰_아이템을_조회할_떄_유저가_null이면_USER_NOT_FOUND_예외를_반환한다() {
+        // given
+        User user = null;
+        CouponItemCommand.FindByUser command = CouponItemCommand.FindByUser.of(user);
+
+        // when
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> couponItemService.findByUser(command));
+
+        // then
+        assertThat(exception)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
+            .containsExactly(ErrorCode.USER_NOT_FOUND.getCode(), ErrorCode.USER_NOT_FOUND.getMessage());
+    }
 }

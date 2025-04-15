@@ -5,6 +5,8 @@ import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class CouponItemService {
@@ -27,6 +29,14 @@ public class CouponItemService {
 
         CouponItem issuedCouponItem = CouponItem.issue(command.getUser(), command.getCoupon());
         return couponItemRepository.save(issuedCouponItem);
+    }
+
+    public List<CouponItem> findByUser(CouponItemCommand.FindByUser command) {
+        if (command.getUser() == null) {
+            throw new BusinessLogicException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        return couponItemRepository.findByUser(command.getUser());
     }
 
 }

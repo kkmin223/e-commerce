@@ -3,6 +3,7 @@ package kr.hhplus.be.server.domain.couponItem;
 import jakarta.persistence.*;
 import kr.hhplus.be.server.domain.common.entity.BaseEntity;
 import kr.hhplus.be.server.domain.coupon.Coupon;
+import kr.hhplus.be.server.domain.coupon.CouponType;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
 import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
@@ -59,6 +60,18 @@ public class CouponItem extends BaseEntity {
 
         coupon.decreaseRemainingQuantity();
         return new CouponItem(user, coupon, false);
+    }
+
+    public String getCouponName() {
+        return coupon.getTitle();
+    }
+
+    public String getCouponLabel() {
+        return coupon.getDiscountLabel();
+    }
+
+    public CouponType getCouponType() {
+        return coupon.getCouponType();
     }
 
 }
