@@ -28,4 +28,9 @@ public class ProductRepositoryImpl implements ProductRepository {
     public List<Product> findAllByProductIds(List<Long> productIds) {
         return productJpaRepository.findAllById(productIds);
     }
+
+    @Override
+    public Product save(Product product) {
+        return productJpaRepository.save(product);
+    }
 }
