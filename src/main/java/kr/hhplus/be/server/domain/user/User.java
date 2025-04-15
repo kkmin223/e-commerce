@@ -25,8 +25,16 @@ public class User extends BaseEntity {
         this.amount = amount;
     }
 
+    private User(Amount amount) {
+        this.amount = amount;
+    }
+
     public static User of(Long userId, Integer amount) {
         return new User(userId, Amount.of(amount));
+    }
+
+    public static User of(Integer amount) {
+        return new User(Amount.of(amount));
     }
 
     public Integer getAmount() {
