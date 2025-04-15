@@ -20,7 +20,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -78,6 +77,5 @@ class OrderFacadeTest {
         inOrder.verify(couponItemService).getCouponItem(any());
         inOrder.verify(paymentService).createAndProcess(any());
         inOrder.verify(dataPlatform).sendData(any());
-
     }
 }
