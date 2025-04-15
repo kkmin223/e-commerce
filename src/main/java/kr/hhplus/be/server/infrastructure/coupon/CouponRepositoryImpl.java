@@ -1,6 +1,5 @@
 package kr.hhplus.be.server.infrastructure.coupon;
 
-import jakarta.persistence.EntityManager;
 import kr.hhplus.be.server.domain.coupon.Coupon;
 import kr.hhplus.be.server.domain.coupon.CouponRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,5 +16,10 @@ public class CouponRepositoryImpl implements CouponRepository {
     @Override
     public Optional<Coupon> getCoupon(Long id) {
         return couponJpaRepository.findById(id);
+    }
+
+    @Override
+    public Coupon save(Coupon coupon) {
+        return couponJpaRepository.save(coupon);
     }
 }

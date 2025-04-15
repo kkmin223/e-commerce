@@ -11,6 +11,7 @@ import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.domain.user.UserCommand;
 import kr.hhplus.be.server.domain.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Facade
@@ -20,6 +21,7 @@ public class CouponFacade {
     private final UserService userService;
     private final CouponItemService couponItemService;
 
+    @Transactional
     public CouponResult.Issue IssueCoupon(CouponCriteria.Issue criteria) {
 
         User user = userService.getUser(UserCommand.Get.of(criteria.getUserId()));
