@@ -36,7 +36,7 @@ class PaymentTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        Order order = Order.create(user, productQuantities);
+        Order order = Order.create(user, productQuantities, LocalDateTime.now());
         // when
         Payment payment = Payment.create(order, user);
 
@@ -62,7 +62,7 @@ class PaymentTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        Order order = Order.create(user, productQuantities);
+        Order order = Order.create(user, productQuantities, LocalDateTime.now());
         AmountCoupon coupon = AmountCoupon.of("정액 쿠폰", 10, 1000);
         CouponItem couponItem = CouponItem.of(user, coupon, Boolean.FALSE);
 
@@ -92,7 +92,7 @@ class PaymentTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        Order order = Order.create(user, productQuantities);
+        Order order = Order.create(user, productQuantities, LocalDateTime.now());
         Coupon coupon = AmountCoupon.of("정액 쿠폰", 10, 1000);
         CouponItem couponItem = CouponItem.of(user, coupon, Boolean.TRUE);
 
@@ -123,7 +123,7 @@ class PaymentTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        Order order = Order.create(user, productQuantities);
+        Order order = Order.create(user, productQuantities, LocalDateTime.now());
         Payment payment = Payment.create(order, user);
 
         // when
@@ -154,7 +154,7 @@ class PaymentTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        Order order = Order.create(user, productQuantities);
+        Order order = Order.create(user, productQuantities, LocalDateTime.now());
         Payment payment = Payment.create(order, user);
         // when
         BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> payment.processPayment());

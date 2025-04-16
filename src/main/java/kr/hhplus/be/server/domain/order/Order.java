@@ -1,7 +1,6 @@
 package kr.hhplus.be.server.domain.order;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.common.entity.BaseEntity;
 import kr.hhplus.be.server.domain.orderItem.OrderItem;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.user.User;
@@ -10,6 +9,7 @@ import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +17,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Entity
 @Table(name = "orders")
-public class Order extends BaseEntity {
+public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -37,12 +37,16 @@ public class Order extends BaseEntity {
     @OneToMany(mappedBy = "order")
     List<OrderItem> orderItems;
 
-    private Order(User user, List<OrderItem> orderItems) {
+    @Column(nullable = false)
+    private LocalDateTime orderAt;
+
+    private Order(User user, List<OrderItem> orderItems, LocalDateTime orderAt) {
         this.user = user;
         this.orderItems = orderItems;
         this.totalAmount = calculateTotalAmount();
         this.paymentAmount = null;
         this.status = OrderStatus.PAYMENT_PENDING;
+        this.orderAt = orderAt;
 
         for (OrderItem orderItem : orderItems) {
             orderItem.setOrder(this); // 여기서 역방향 연관관계 세팅
@@ -50,7 +54,7 @@ public class Order extends BaseEntity {
 
     }
 
-    public static Order create(User user, Map<Product, Integer> productQuantities) {
+    public static Order create(User user, Map<Product, Integer> productQuantities, LocalDateTime orderAt) {
         if (user == null) {
             throw new BusinessLogicException(ErrorCode.USER_NOT_FOUND);
         }
@@ -60,11 +64,15 @@ public class Order extends BaseEntity {
             throw new BusinessLogicException(ErrorCode.ORDER_PRODUCT_NOT_FOUND);
         }
 
+        if (orderAt == null) {
+            orderAt = LocalDateTime.now();
+        }
+
         List<OrderItem> orderItems = productQuantities.entrySet().stream()
             .map(entry -> OrderItem.create(entry.getKey(), entry.getValue()))
             .toList();
 
-        return new Order(user, orderItems);
+        return new Order(user, orderItems, orderAt);
     }
 
     private Integer calculateTotalAmount() {

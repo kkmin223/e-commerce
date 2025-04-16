@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +39,7 @@ public class OrderServiceIntegrationTest {
         Map<Product, Integer> productQuantities = new HashMap<>();
         productQuantities.put(savedProduct, 1);
 
-        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(savedUser, productQuantities);
+        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(savedUser, productQuantities, LocalDateTime.now());
 
         // when
         Order order = orderService.createOrder(command);

@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -60,7 +61,7 @@ public class PaymentServiceIntegrationTest {
         productQuantities.put(savedProduct1, orderQuantity1);
         productQuantities.put(savedProduct2, orderQuantity2);
 
-        Order savedOrder = orderRepository.save(Order.create(savedUser, productQuantities));
+        Order savedOrder = orderRepository.save(Order.create(savedUser, productQuantities, LocalDateTime.now()));
 
         PaymentCommand.CreateAndProcess command = PaymentCommand.CreateAndProcess.of(savedUser, savedOrder, null);
 
@@ -92,7 +93,7 @@ public class PaymentServiceIntegrationTest {
         productQuantities.put(savedProduct1, orderQuantity1);
         productQuantities.put(savedProduct2, orderQuantity2);
 
-        Order savedOrder = orderRepository.save(Order.create(savedUser, productQuantities));
+        Order savedOrder = orderRepository.save(Order.create(savedUser, productQuantities, LocalDateTime.now()));
 
         Coupon savedCoupon = couponRepository.save(AmountCoupon.of("쿠폰", 10, 1_000));
         CouponItem savedCouponItem = couponItemRepository.save(CouponItem.of(savedUser, savedCoupon, Boolean.FALSE));

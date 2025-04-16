@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.order;
 
 import kr.hhplus.be.server.domain.orderItem.OrderItem;
+import kr.hhplus.be.server.domain.orderItem.OrderItemRepository;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
@@ -33,6 +34,9 @@ class OrderServiceTest {
     @Mock
     private OrderRepository orderRepository;
 
+    @Mock
+    private OrderItemRepository orderItemRepository;
+
     @Test
     void 주문을_생성한다() {
         // given
@@ -49,9 +53,10 @@ class OrderServiceTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities);
+        LocalDateTime now = LocalDateTime.now();
+        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, now);
 
-        Mockito.when(orderRepository.save(any(Order.class))).thenReturn(Order.create(user, productQuantities));
+        Mockito.when(orderRepository.save(any(Order.class))).thenReturn(Order.create(user, productQuantities, now));
 
         // when
         Order order = orderService.createOrder(command);
@@ -81,7 +86,7 @@ class OrderServiceTest {
         Map<Product, Integer> productQuantities = new HashMap<>();
         productQuantities.put(product1, orderQuantity1);
 
-        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities);
+        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, LocalDateTime.now());
 
         // when
         BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> orderService.createOrder(command));
@@ -110,7 +115,7 @@ class OrderServiceTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities);
+        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, LocalDateTime.now());
 
         // when
         BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> orderService.createOrder(command));
@@ -128,7 +133,7 @@ class OrderServiceTest {
 
         Map<Product, Integer> productQuantities = null;
 
-        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities);
+        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, LocalDateTime.now());
 
         // when
         BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> orderService.createOrder(command));
@@ -146,7 +151,7 @@ class OrderServiceTest {
 
         Map<Product, Integer> productQuantities = new HashMap<>();
 
-        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities);
+        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, LocalDateTime.now());
 
         // when
         BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> orderService.createOrder(command));

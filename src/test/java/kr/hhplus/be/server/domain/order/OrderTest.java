@@ -12,8 +12,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
+import static org.assertj.core.api.Assertions.*;
 
 class OrderTest {
 
@@ -33,8 +32,43 @@ class OrderTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
+        LocalDateTime now = LocalDateTime.now();
+
         // when
-        Order order = Order.create(user, productQuantities);
+        Order order = Order.create(user, productQuantities, now);
+
+        // then
+        assertThat(order.getOrderItems())
+            .hasSize(productQuantities.size())
+            .extracting(OrderItem::getProduct, OrderItem::getOrderQuantity)
+            .containsExactlyInAnyOrder(
+                tuple(product1, orderQuantity1),
+                tuple(product2, orderQuantity2)
+            );
+
+        assertThat(order)
+            .extracting(Order::getTotalAmount, Order::getStatus, Order::getOrderAt)
+            .containsExactly(product1.getPrice() * orderQuantity1 + product2.getPrice() * orderQuantity2, OrderStatus.PAYMENT_PENDING, now);
+    }
+
+    @Test
+    void 사용자와_주문상품_수량과_시간을_입력하지_않아도_주문을_생성한다() {
+        // given
+        User user = User.of(1L, 1_000_000);
+        Integer stockQuantity1 = 10;
+        Product product1 = Product.of(1L, "상품1", stockQuantity1, 10_000);
+        Integer orderQuantity1 = 1;
+
+        Integer stockQuantity2 = 10;
+        Product product2 = Product.of(2L, "상품2", stockQuantity2, 20_000);
+        Integer orderQuantity2 = 2;
+
+        Map<Product, Integer> productQuantities = new HashMap<>();
+        productQuantities.put(product1, orderQuantity1);
+        productQuantities.put(product2, orderQuantity2);
+
+        // when
+        Order order = Order.create(user, productQuantities, null);
 
         // then
         assertThat(order.getOrderItems())
@@ -62,7 +96,7 @@ class OrderTest {
         productQuantities.put(product1, orderQuantity1);
 
         // when
-        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> Order.create(user, productQuantities));
+        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> Order.create(user, productQuantities, LocalDateTime.now()));
 
         // then
         assertThat(exception)
@@ -82,7 +116,7 @@ class OrderTest {
         productQuantities.put(product1, orderQuantity1);
 
         // when
-        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> Order.create(user, productQuantities));
+        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> Order.create(user, productQuantities, LocalDateTime.now()));
 
         // then
         assertThat(exception)
@@ -100,7 +134,7 @@ class OrderTest {
         Map<Product, Integer> productQuantities = null;
 
         // when
-        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> Order.create(user, productQuantities));
+        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> Order.create(user, productQuantities, LocalDateTime.now()));
 
         // then
         assertThat(exception)
@@ -117,7 +151,7 @@ class OrderTest {
         Map<Product, Integer> productQuantities = new HashMap<>();
 
         // when
-        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> Order.create(user, productQuantities));
+        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> Order.create(user, productQuantities, LocalDateTime.now()));
 
         // then
         assertThat(exception)
@@ -141,7 +175,7 @@ class OrderTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        Order order = Order.create(user, productQuantities);
+        Order order = Order.create(user, productQuantities, LocalDateTime.now());
         // when
         order.completeOrder(product1.getPrice() * orderQuantity1 + product2.getPrice() * orderQuantity2);
 

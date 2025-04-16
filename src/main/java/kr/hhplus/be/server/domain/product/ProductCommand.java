@@ -44,4 +44,15 @@ public class ProductCommand {
             return new ProductsWithQuantity(product.getProductId(), product.getQuantity());
         }
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class FindTopSellingProduct {
+        private List<Long> productIds;
+
+        public static FindTopSellingProduct of(List<Long> productIds) {
+            return new FindTopSellingProduct(productIds);
+        }
+    }
 }

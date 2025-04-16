@@ -9,6 +9,7 @@ import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderRepository;
 import kr.hhplus.be.server.domain.order.OrderStatus;
 import kr.hhplus.be.server.domain.orderItem.OrderItem;
+import kr.hhplus.be.server.domain.orderItem.OrderItemRepository;
 import kr.hhplus.be.server.domain.payment.Payment;
 import kr.hhplus.be.server.domain.payment.PaymentRepository;
 import kr.hhplus.be.server.domain.product.Product;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,6 +52,9 @@ public class OrderFacadeIntegrationTest {
     @Autowired
     private PaymentRepository paymentRepository;
 
+    @Autowired
+    private OrderItemRepository orderItemRepository;
+
     @Test
     void 주문을_생성하고_쿠폰을_사용하여_결재를_진행한다() {
         // given
@@ -62,7 +67,7 @@ public class OrderFacadeIntegrationTest {
         CouponItem savedCouponItem = couponItemRepository.save(CouponItem.of(savedUser, savedCoupon, false));
 
         OrderCriteria.OrderProduct orderProduct = OrderCriteria.OrderProduct.of(savedProduct.getId(), 1);
-        OrderCriteria.OrderAndPay criteria = OrderCriteria.OrderAndPay.of(savedUser.getId(), savedCouponItem.getId(), List.of(orderProduct));
+        OrderCriteria.OrderAndPay criteria = OrderCriteria.OrderAndPay.of(savedUser.getId(), savedCouponItem.getId(), List.of(orderProduct), LocalDateTime.now());
 
         // when
         OrderResult.OrderAndPay result = orderFacade.orderAndPay(criteria);
@@ -90,13 +95,16 @@ public class OrderFacadeIntegrationTest {
             .extracting(Order::getTotalAmount, Order::getPaymentAmount, Order::getStatus)
             .containsExactly(expectedTotalAmount, expectedPayAmount, OrderStatus.COMPLETED);
 
+        // 주문 아이템 검증
+        List<OrderItem> expectedOrderItems = orderItemRepository.findByOrderId(expectedOrder.getId());
+        assertThat(expectedOrderItems)
+            .extracting(OrderItem::getProduct, OrderItem::getOrderQuantity)
+            .containsExactly(Tuple.tuple(savedProduct, 1))
+            .hasSize(1);
+
         // 유저 검증
         assertThat(savedUser.getAmount())
             .isEqualTo(expectedUserAmount);
-
-        assertThat(expectedOrder.getOrderItems())
-            .extracting(OrderItem::getProduct, OrderItem::getOrderQuantity)
-            .containsExactly(Tuple.tuple(savedProduct, 1));
 
         // 결제 검증
         Payment payment = paymentRepository.findByOrder(expectedOrder).orElseThrow();
@@ -121,7 +129,7 @@ public class OrderFacadeIntegrationTest {
         Product savedProduct = productRepository.save(Product.of(null, "상품", initialQuantity, 1_000));
 
         OrderCriteria.OrderProduct orderProduct = OrderCriteria.OrderProduct.of(savedProduct.getId(), 1);
-        OrderCriteria.OrderAndPay criteria = OrderCriteria.OrderAndPay.of(savedUser.getId(), null, List.of(orderProduct));
+        OrderCriteria.OrderAndPay criteria = OrderCriteria.OrderAndPay.of(savedUser.getId(), null, List.of(orderProduct), LocalDateTime.now());
 
         // when
         OrderResult.OrderAndPay result = orderFacade.orderAndPay(criteria);
@@ -145,13 +153,16 @@ public class OrderFacadeIntegrationTest {
             .extracting(Order::getTotalAmount, Order::getPaymentAmount, Order::getStatus)
             .containsExactly(expectedTotalAmount, expectedPayAmount, OrderStatus.COMPLETED);
 
+        // 주문 아이템 검증
+        List<OrderItem> expectedOrderItems = orderItemRepository.findByOrderId(expectedOrder.getId());
+        assertThat(expectedOrderItems)
+            .extracting(OrderItem::getProduct, OrderItem::getOrderQuantity)
+            .containsExactly(Tuple.tuple(savedProduct, 1))
+            .hasSize(1);
+
         // 유저 검증
         assertThat(savedUser.getAmount())
             .isEqualTo(expectedUserAmount);
-
-        assertThat(expectedOrder.getOrderItems())
-            .extracting(OrderItem::getProduct, OrderItem::getOrderQuantity)
-            .containsExactly(Tuple.tuple(savedProduct, 1));
 
         // 결제 검증
         Payment payment = paymentRepository.findByOrder(expectedOrder).orElseThrow();

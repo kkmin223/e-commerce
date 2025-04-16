@@ -40,7 +40,7 @@ public class OrderFacade {
 
         Map<Product, Integer> productsWithQuantities = productService.findProductsWithQuantities(ProductCommand.FindProductsWithQuantity.of(criteria.getOrderProducts()));
 
-        Order order = orderService.createOrder(OrderCommand.CreateOrder.of(user, productsWithQuantities));
+        Order order = orderService.createOrder(OrderCommand.CreateOrder.of(user, productsWithQuantities, criteria.getOrderAt()));
 
         CouponItem couponItem = null;
         if (criteria.getCouponItemId() != null) {

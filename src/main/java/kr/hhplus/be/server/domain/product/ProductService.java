@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -61,5 +62,17 @@ public class ProductService {
                 product -> product,
                 product -> quantityMap.get(product.getId())
             ));
+    }
+
+    public List<Product> findTopSellingProduct(ProductCommand.FindTopSellingProduct command) {
+        List<Product> products = productRepository.findAllByProductIds(command.getProductIds());
+
+        Map<Long, Product> productMap = products.stream()
+            .collect(Collectors.toMap(Product::getId, Function.identity()));
+
+        return command.getProductIds()
+            .stream()
+            .map(productMap::get)
+            .toList();
     }
 }

@@ -14,9 +14,10 @@ public class OrderCriteria {
         private Long userId;
         private Long couponItemId;
         private List<OrderProduct> orderProducts;
+        private LocalDateTime orderAt;
 
-        public static OrderAndPay of(Long userId, Long couponItemId, List<OrderProduct> orderProducts) {
-            return new OrderAndPay(userId, couponItemId, orderProducts);
+        public static OrderAndPay of(Long userId, Long couponItemId, List<OrderProduct> orderProducts, LocalDateTime orderAt) {
+            return new OrderAndPay(userId, couponItemId, orderProducts, orderAt);
         }
     }
 
