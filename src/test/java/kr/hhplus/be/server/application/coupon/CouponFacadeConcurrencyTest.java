@@ -37,7 +37,7 @@ public class CouponFacadeConcurrencyTest {
     private CouponItemRepository couponItemRepository;
 
     @Test
-    void 동시에_100명이_쿠폰을_요청한다() throws InterruptedException {
+    void 동시에_20명이_쿠폰을_요청한다() throws InterruptedException {
         // Given
         final int INITIAL_QUANTITY = 20;
         final int THREAD_COUNT = 21;  // 초과 요청 1건 포함
