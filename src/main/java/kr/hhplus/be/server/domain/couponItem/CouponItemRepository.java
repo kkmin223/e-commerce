@@ -11,4 +11,6 @@ public interface CouponItemRepository {
     CouponItem save(CouponItem couponItem);
 
     List<CouponItem> findByUser(User user);
+
+    int countByCouponId(Long id);
 }

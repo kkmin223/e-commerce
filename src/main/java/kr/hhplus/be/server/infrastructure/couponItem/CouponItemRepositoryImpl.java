@@ -29,4 +29,9 @@ public class CouponItemRepositoryImpl implements CouponItemRepository {
     public List<CouponItem> findByUser(User user) {
         return couponItemJpaRepository.findByUser(user);
     }
+
+    @Override
+    public int countByCouponId(Long id) {
+        return couponItemJpaRepository.countByCouponId(id);
+    }
 }
