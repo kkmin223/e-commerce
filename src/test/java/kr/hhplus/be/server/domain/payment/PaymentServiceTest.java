@@ -7,7 +7,7 @@ import kr.hhplus.be.server.domain.order.OrderStatus;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
-import kr.hhplus.be.server.interfaces.common.exceptions.InsufficientBalanceException;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -47,9 +47,7 @@ class PaymentServiceTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        Order order = Order.create(user, productQuantities, orderAt);
+        Order order = Order.create(user, productQuantities, LocalDateTime.now());
 
         PaymentCommand.CreateAndProcess command = PaymentCommand.CreateAndProcess.of(user, order, null);
 
@@ -82,9 +80,7 @@ class PaymentServiceTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        Order order = Order.create(user, productQuantities, orderAt);
+        Order order = Order.create(user, productQuantities, LocalDateTime.now());
         AmountCoupon coupon = AmountCoupon.of("정액 쿠폰", 10, 1000);
         CouponItem couponItem = CouponItem.of(user, coupon, Boolean.FALSE);
 
@@ -123,18 +119,16 @@ class PaymentServiceTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        Order order = Order.create(user, productQuantities, orderAt);
+        Order order = Order.create(user, productQuantities, LocalDateTime.now());
 
         PaymentCommand.CreateAndProcess command = PaymentCommand.CreateAndProcess.of(user, order, null);
 
         // when
-        InsufficientBalanceException exception = assertThrows(InsufficientBalanceException.class, () -> paymentService.createAndProcess(command));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> paymentService.createAndProcess(command));
 
         // then
         assertThat(exception)
-            .extracting(InsufficientBalanceException::getCode, InsufficientBalanceException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INSUFFICIENT_BALANCE.getCode(), ErrorCode.INSUFFICIENT_BALANCE.getMessage());
 
         Mockito.verify(paymentRepository, Mockito.never()).save(Mockito.any(Payment.class));

@@ -23,6 +23,8 @@ public enum ErrorCode implements Code {
     INSUFFICIENT_COUPON_QUANTITY("INSUFFICIENT_COUPON_QUANTITY", "쿠폰 수량이 부족합니다."),
     COUPON_NOT_FOUND("COUPON_NOT_FOUND", "쿠폰이 존재하지 않습니다."),
     INVALID_COUPON_ID("INVALID_COUPON_ID", "쿠폰 식별자가 유효하지 않습니다."),
+    INVALID_DATE("INVALID_DATE", "날짜가 유효하지 않습니다."),
+    INVALID_GET_COUNT("INVALID_GET_COUNT", "조회 개수가 유효하지 않습니다.")
     ;
 
     private final String code;

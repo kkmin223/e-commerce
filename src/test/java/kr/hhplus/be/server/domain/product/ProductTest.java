@@ -1,9 +1,7 @@
 package kr.hhplus.be.server.domain.product;
 
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
-import kr.hhplus.be.server.interfaces.common.exceptions.InsufficientStockException;
-import kr.hhplus.be.server.interfaces.common.exceptions.InvalidIncreaseQuantityException;
-import kr.hhplus.be.server.interfaces.common.exceptions.InvalidReduceQuantityException;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -35,10 +33,10 @@ class ProductTest {
         Product product1 = Product.of(1L, "상품1", initialQuantity, 1_000);
 
         // when
-        InvalidReduceQuantityException exception = assertThrows(InvalidReduceQuantityException.class, () -> product1.reduceQuantity(reduceQuantity));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> product1.reduceQuantity(reduceQuantity));
 
         assertThat(exception)
-            .extracting(InvalidReduceQuantityException::getCode, InvalidReduceQuantityException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INVALID_REDUCE_QUANTITY.getCode(), ErrorCode.INVALID_REDUCE_QUANTITY.getMessage());
     }
 
@@ -50,10 +48,10 @@ class ProductTest {
         Integer reduceQuantity = initialQuantity + 1;
 
         // when
-        InsufficientStockException exception = assertThrows(InsufficientStockException.class, () -> product1.reduceQuantity(reduceQuantity));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> product1.reduceQuantity(reduceQuantity));
 
         assertThat(exception)
-            .extracting(InsufficientStockException::getCode, InsufficientStockException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INSUFFICIENT_STOCK.getCode(), ErrorCode.INSUFFICIENT_STOCK.getMessage());
     }
 
@@ -79,10 +77,10 @@ class ProductTest {
         Product product1 = Product.of(1L, "상품1", initialQuantity, 1_000);
 
         // when
-        InvalidIncreaseQuantityException exception = assertThrows(InvalidIncreaseQuantityException.class, () -> product1.increaseQuantity(increaseQuantity));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> product1.increaseQuantity(increaseQuantity));
 
         assertThat(exception)
-            .extracting(InvalidIncreaseQuantityException::getCode, InvalidIncreaseQuantityException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INVALID_INCREASE_QUANTITY.getCode(), ErrorCode.INVALID_INCREASE_QUANTITY.getMessage());
     }
 
@@ -94,7 +92,7 @@ class ProductTest {
         Product product = Product.of(1L, "상품1", initialQuantity, 1_000);
 
         // when
-        boolean result =  product.canOrder(orderQuantity);
+        boolean result = product.canOrder(orderQuantity);
 
         // then
         assertThat(result).isTrue();
@@ -108,7 +106,7 @@ class ProductTest {
         Integer orderQuantity = initialQuantity + 1;
 
         // when
-        boolean result =  product.canOrder(orderQuantity);
+        boolean result = product.canOrder(orderQuantity);
 
         // then
         assertThat(result).isFalse();

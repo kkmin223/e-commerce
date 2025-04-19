@@ -1,5 +1,8 @@
 package kr.hhplus.be.server.interfaces.product;
 
+import kr.hhplus.be.server.application.product.ProductCriteria;
+import kr.hhplus.be.server.application.product.ProductFacade;
+import kr.hhplus.be.server.application.product.ProductResult;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.ProductCommand;
 import kr.hhplus.be.server.domain.product.ProductService;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -21,6 +25,7 @@ import java.util.List;
 public class ProductController implements ProductApi {
 
     private final ProductService productService;
+    private final ProductFacade productFacade;
 
     @Override
     @GetMapping()
@@ -48,6 +53,14 @@ public class ProductController implements ProductApi {
     @Override
     @GetMapping("/popular")
     public ResponseEntity<ApiResult<List<ProductResponse.Product>>> listPopularProduct() {
-        return ResponseEntity.ok(ApiResult.of(SuccessCode.LIST_POPULAR_PRODUCT, List.of(new ProductResponse.Product(1L, "상품", 10000, 10))));
+        LocalDate today = LocalDate.now();
+        List<ProductResult.Product> topSellingProducts = productFacade.getTopSellingProducts(ProductCriteria.GetTopSellingProducts.of(today.minusDays(3), today, 5));
+
+        List<ProductResponse.Product> result = topSellingProducts
+            .stream()
+            .map(product -> ProductResponse.Product.of(product.getId(), product.getName(), product.getPrice(), product.getQuantity()))
+            .toList();
+
+        return ResponseEntity.ok(ApiResult.of(SuccessCode.LIST_POPULAR_PRODUCT, result));
     }
 }

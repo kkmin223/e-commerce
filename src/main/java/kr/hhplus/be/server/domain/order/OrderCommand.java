@@ -21,7 +21,7 @@ public class OrderCommand {
         private LocalDateTime orderAt;
 
         public static CreateOrder of(User user, Map<Product, Integer> productQuantities, LocalDateTime orderAt) {
-            return new CreateOrder(user, productQuantities,orderAt);
+            return new CreateOrder(user, productQuantities, orderAt);
         }
     }
 

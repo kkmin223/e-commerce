@@ -2,8 +2,7 @@ package kr.hhplus.be.server.domain.user;
 
 
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
-import kr.hhplus.be.server.interfaces.common.exceptions.InvalidChargeAmountException;
-import kr.hhplus.be.server.interfaces.common.exceptions.InvalidDeductAmountException;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -37,11 +36,11 @@ class UserTest {
         User user = User.of(userId, amount);
 
         // when
-        InvalidChargeAmountException exception = Assertions.assertThrows(InvalidChargeAmountException.class, () -> user.chargeAmount(chargeAmount));
+        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> user.chargeAmount(chargeAmount));
 
         // then
         assertThat(exception)
-            .extracting(InvalidChargeAmountException::getCode, InvalidChargeAmountException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INVALID_CHARGE_AMOUNT.getCode(), ErrorCode.INVALID_CHARGE_AMOUNT.getMessage());
 
     }
@@ -70,11 +69,11 @@ class UserTest {
         User user = User.of(userId, amount);
 
         // when
-        InvalidDeductAmountException exception = Assertions.assertThrows(InvalidDeductAmountException.class, () -> user.deductAmount(deductAmount));
+        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> user.deductAmount(deductAmount));
 
         // then
         assertThat(exception)
-            .extracting(InvalidDeductAmountException::getCode, InvalidDeductAmountException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INVALID_DEDUCT_AMOUNT.getCode(), ErrorCode.INVALID_DEDUCT_AMOUNT.getMessage());
 
     }

@@ -1,9 +1,7 @@
 package kr.hhplus.be.server.domain.product;
 
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
-import kr.hhplus.be.server.interfaces.common.exceptions.InvalidOrderQuantityException;
-import kr.hhplus.be.server.interfaces.common.exceptions.InvalidProductIdException;
-import kr.hhplus.be.server.interfaces.common.exceptions.OrderProductNotFoundException;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -70,11 +68,11 @@ class ProductServiceTest {
         ProductCommand.Get getCommand = ProductCommand.Get.of(productId);
 
         // when
-        InvalidProductIdException exception = assertThrows(InvalidProductIdException.class, () -> productService.getProduct(getCommand));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> productService.getProduct(getCommand));
 
         // then
         assertThat(exception)
-            .extracting(InvalidProductIdException::getCode, InvalidProductIdException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INVALID_PRODUCT_ID.getCode(), ErrorCode.INVALID_PRODUCT_ID.getMessage());
     }
 
@@ -85,11 +83,11 @@ class ProductServiceTest {
         ProductCommand.Get getCommand = ProductCommand.Get.of(productId);
 
         // when
-        InvalidProductIdException exception = assertThrows(InvalidProductIdException.class, () -> productService.getProduct(getCommand));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> productService.getProduct(getCommand));
 
         // then
         assertThat(exception)
-            .extracting(InvalidProductIdException::getCode, InvalidProductIdException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INVALID_PRODUCT_ID.getCode(), ErrorCode.INVALID_PRODUCT_ID.getMessage());
 
     }
@@ -151,11 +149,11 @@ class ProductServiceTest {
         when(productRepository.findAllByProductIds(List.of(productsWithQuantity1.getProductId(), productsWithQuantity2.getProductId()))).thenReturn(List.of(product1));
 
         // when
-        OrderProductNotFoundException exception = assertThrows(OrderProductNotFoundException.class, () -> productService.findProductsWithQuantities(command));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> productService.findProductsWithQuantities(command));
 
         // then
         assertThat(exception)
-            .extracting(OrderProductNotFoundException::getCode, OrderProductNotFoundException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.ORDER_PRODUCT_NOT_FOUND.getCode(), ErrorCode.ORDER_PRODUCT_NOT_FOUND.getMessage());
     }
 
@@ -168,11 +166,11 @@ class ProductServiceTest {
         ProductCommand.FindProductsWithQuantity command = new ProductCommand.FindProductsWithQuantity(List.of(productsWithQuantity1, productsWithQuantity2));
 
         // when
-        InvalidProductIdException exception = assertThrows(InvalidProductIdException.class, () -> productService.findProductsWithQuantities(command));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> productService.findProductsWithQuantities(command));
 
         // then
         assertThat(exception)
-            .extracting(InvalidProductIdException::getCode, InvalidProductIdException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INVALID_PRODUCT_ID.getCode(), ErrorCode.INVALID_PRODUCT_ID.getMessage());
     }
 
@@ -185,11 +183,11 @@ class ProductServiceTest {
         ProductCommand.FindProductsWithQuantity command = new ProductCommand.FindProductsWithQuantity(List.of(productsWithQuantity1));
 
         // when
-        InvalidProductIdException exception = assertThrows(InvalidProductIdException.class, () -> productService.findProductsWithQuantities(command));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> productService.findProductsWithQuantities(command));
 
         // then
         assertThat(exception)
-            .extracting(InvalidProductIdException::getCode, InvalidProductIdException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INVALID_PRODUCT_ID.getCode(), ErrorCode.INVALID_PRODUCT_ID.getMessage());
     }
 
@@ -201,11 +199,11 @@ class ProductServiceTest {
         ProductCommand.FindProductsWithQuantity command = new ProductCommand.FindProductsWithQuantity(List.of(productsWithQuantity1));
 
         // when
-        InvalidOrderQuantityException exception = assertThrows(InvalidOrderQuantityException.class, () -> productService.findProductsWithQuantities(command));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> productService.findProductsWithQuantities(command));
 
         // then
         assertThat(exception)
-            .extracting(InvalidOrderQuantityException::getCode, InvalidOrderQuantityException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INVALID_ORDER_QUANTITY.getCode(), ErrorCode.INVALID_ORDER_QUANTITY.getMessage());
     }
 
@@ -218,11 +216,11 @@ class ProductServiceTest {
         ProductCommand.FindProductsWithQuantity command = new ProductCommand.FindProductsWithQuantity(List.of(productsWithQuantity1));
 
         // when
-        InvalidOrderQuantityException exception = assertThrows(InvalidOrderQuantityException.class, () -> productService.findProductsWithQuantities(command));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> productService.findProductsWithQuantities(command));
 
         // then
         assertThat(exception)
-            .extracting(InvalidOrderQuantityException::getCode, InvalidOrderQuantityException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INVALID_ORDER_QUANTITY.getCode(), ErrorCode.INVALID_ORDER_QUANTITY.getMessage());
     }
 }

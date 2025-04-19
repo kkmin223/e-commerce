@@ -8,8 +8,7 @@ import kr.hhplus.be.server.domain.order.OrderStatus;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
-import kr.hhplus.be.server.interfaces.common.exceptions.CouponAlreadyUsedException;
-import kr.hhplus.be.server.interfaces.common.exceptions.InsufficientBalanceException;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -37,9 +36,7 @@ class PaymentTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        Order order = Order.create(user, productQuantities, orderAt);
+        Order order = Order.create(user, productQuantities, LocalDateTime.now());
         // when
         Payment payment = Payment.create(order, user);
 
@@ -65,9 +62,7 @@ class PaymentTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        Order order = Order.create(user, productQuantities, orderAt);
+        Order order = Order.create(user, productQuantities, LocalDateTime.now());
         AmountCoupon coupon = AmountCoupon.of("정액 쿠폰", 10, 1000);
         CouponItem couponItem = CouponItem.of(user, coupon, Boolean.FALSE);
 
@@ -97,19 +92,17 @@ class PaymentTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        Order order = Order.create(user, productQuantities, orderAt);
+        Order order = Order.create(user, productQuantities, LocalDateTime.now());
         Coupon coupon = AmountCoupon.of("정액 쿠폰", 10, 1000);
         CouponItem couponItem = CouponItem.of(user, coupon, Boolean.TRUE);
 
         Payment payment = Payment.create(order, user);
         // when
-        CouponAlreadyUsedException exception = assertThrows(CouponAlreadyUsedException.class, () -> payment.applyCoupon(couponItem));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> payment.applyCoupon(couponItem));
 
         // then
         assertThat(exception)
-            .extracting(CouponAlreadyUsedException::getCode, CouponAlreadyUsedException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.COUPON_ALREADY_USED.getCode(), ErrorCode.COUPON_ALREADY_USED.getMessage());
     }
 
@@ -130,9 +123,7 @@ class PaymentTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        Order order = Order.create(user, productQuantities, orderAt);
+        Order order = Order.create(user, productQuantities, LocalDateTime.now());
         Payment payment = Payment.create(order, user);
 
         // when
@@ -163,16 +154,14 @@ class PaymentTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        Order order = Order.create(user, productQuantities, orderAt);
+        Order order = Order.create(user, productQuantities, LocalDateTime.now());
         Payment payment = Payment.create(order, user);
         // when
-        InsufficientBalanceException exception = assertThrows(InsufficientBalanceException.class, () -> payment.processPayment());
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> payment.processPayment());
 
         // then
         assertThat(exception)
-            .extracting(InsufficientBalanceException::getCode, InsufficientBalanceException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INSUFFICIENT_BALANCE.getCode(), ErrorCode.INSUFFICIENT_BALANCE.getMessage());
     }
 }

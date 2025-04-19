@@ -9,4 +9,6 @@ public interface ProductRepository {
     Optional<Product> getProduct(Long id);
 
     List<Product> findAllByProductIds(List<Long> productIds);
+
+    Product save(Product product);
 }

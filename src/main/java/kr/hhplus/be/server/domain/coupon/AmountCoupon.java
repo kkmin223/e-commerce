@@ -1,10 +1,16 @@
 package kr.hhplus.be.server.domain.coupon;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
+@Entity
+@DiscriminatorValue("AMOUNT")
 public class AmountCoupon extends Coupon {
     private Integer discountAmount;
 

@@ -1,9 +1,7 @@
 package kr.hhplus.be.server.domain.user;
 
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
-import kr.hhplus.be.server.interfaces.common.exceptions.InvalidChargeAmountException;
-import kr.hhplus.be.server.interfaces.common.exceptions.InvalidUserIdException;
-import kr.hhplus.be.server.interfaces.common.exceptions.UserNotFoundException;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -57,11 +55,11 @@ class UserServiceTest {
 
         Mockito.when(userRepository.getUser(userId)).thenReturn(Optional.of(User.of(userId, initialAmount)));
         //when
-        InvalidChargeAmountException exception = assertThrows(InvalidChargeAmountException.class, () -> userService.charge(chargeCommand));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> userService.charge(chargeCommand));
 
         //then
         assertThat(exception)
-            .extracting(InvalidChargeAmountException::getCode, InvalidChargeAmountException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INVALID_CHARGE_AMOUNT.getCode(), ErrorCode.INVALID_CHARGE_AMOUNT.getMessage());
     }
 
@@ -74,11 +72,11 @@ class UserServiceTest {
         UserCommand.Charge chargeCommand = new UserCommand.Charge(userId, chargeAmount);
 
         //when
-        InvalidUserIdException exception = assertThrows(InvalidUserIdException.class, () -> userService.charge(chargeCommand));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> userService.charge(chargeCommand));
 
         //then
         assertThat(exception)
-            .extracting(InvalidUserIdException::getCode, InvalidUserIdException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INVALID_USER_ID.getCode(), ErrorCode.INVALID_USER_ID.getMessage());
     }
 
@@ -91,11 +89,11 @@ class UserServiceTest {
         UserCommand.Charge chargeCommand = new UserCommand.Charge(userId, chargeAmount);
 
         //when
-        InvalidUserIdException exception = assertThrows(InvalidUserIdException.class, () -> userService.charge(chargeCommand));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> userService.charge(chargeCommand));
 
         //then
         assertThat(exception)
-            .extracting(InvalidUserIdException::getCode, InvalidUserIdException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INVALID_USER_ID.getCode(), ErrorCode.INVALID_USER_ID.getMessage());
     }
 
@@ -109,11 +107,11 @@ class UserServiceTest {
 
         Mockito.when(userRepository.getUser(userId)).thenReturn(Optional.empty());
         //when
-        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.charge(chargeCommand));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> userService.charge(chargeCommand));
 
         //then
         assertThat(exception)
-            .extracting(UserNotFoundException::getCode, UserNotFoundException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.USER_NOT_FOUND.getCode(), ErrorCode.USER_NOT_FOUND.getMessage());
     }
 
@@ -127,11 +125,11 @@ class UserServiceTest {
 
         Mockito.when(userRepository.getUser(userId)).thenReturn(Optional.of(User.of(userId, initialAmount)));
         //when
-        InvalidChargeAmountException exception = assertThrows(InvalidChargeAmountException.class, () -> userService.charge(chargeCommand));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> userService.charge(chargeCommand));
 
         //then
         assertThat(exception)
-            .extracting(InvalidChargeAmountException::getCode, InvalidChargeAmountException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INVALID_CHARGE_AMOUNT.getCode(), ErrorCode.INVALID_CHARGE_AMOUNT.getMessage());
     }
 
@@ -145,11 +143,11 @@ class UserServiceTest {
 
         Mockito.when(userRepository.getUser(userId)).thenReturn(Optional.of(User.of(userId, initialAmount)));
         //when
-        InvalidChargeAmountException exception = assertThrows(InvalidChargeAmountException.class, () -> userService.charge(chargeCommand));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> userService.charge(chargeCommand));
 
         //then
         assertThat(exception)
-            .extracting(InvalidChargeAmountException::getCode, InvalidChargeAmountException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INVALID_CHARGE_AMOUNT.getCode(), ErrorCode.INVALID_CHARGE_AMOUNT.getMessage());
     }
 
@@ -180,11 +178,11 @@ class UserServiceTest {
         UserCommand.Get command = new UserCommand.Get(userId);
 
         // when
-        InvalidUserIdException exception = assertThrows(InvalidUserIdException.class, () -> userService.getUser(command));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> userService.getUser(command));
 
         // then
         assertThat(exception)
-            .extracting(InvalidUserIdException::getCode, InvalidUserIdException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INVALID_USER_ID.getCode(), ErrorCode.INVALID_USER_ID.getMessage());
     }
 
@@ -196,11 +194,11 @@ class UserServiceTest {
         UserCommand.Get command = new UserCommand.Get(userId);
 
         // when
-        InvalidUserIdException exception = assertThrows(InvalidUserIdException.class, () -> userService.getUser(command));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> userService.getUser(command));
 
         // then
         assertThat(exception)
-            .extracting(InvalidUserIdException::getCode, InvalidUserIdException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INVALID_USER_ID.getCode(), ErrorCode.INVALID_USER_ID.getMessage());
     }
 
@@ -214,11 +212,11 @@ class UserServiceTest {
         Mockito.when(userRepository.getUser(userId)).thenReturn(Optional.empty());
 
         // when
-        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.getUser(command));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> userService.getUser(command));
 
         // then
         assertThat(exception)
-            .extracting(UserNotFoundException::getCode, UserNotFoundException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.USER_NOT_FOUND.getCode(), ErrorCode.USER_NOT_FOUND.getMessage());
     }
 

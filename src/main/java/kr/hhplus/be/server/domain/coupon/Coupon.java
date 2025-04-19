@@ -1,15 +1,29 @@
 package kr.hhplus.be.server.domain.coupon;
 
-import kr.hhplus.be.server.interfaces.common.exceptions.InsufficientCouponQuantityException;
+import jakarta.persistence.*;
+import kr.hhplus.be.server.domain.common.entity.BaseEntity;
+import kr.hhplus.be.server.interfaces.common.ErrorCode;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public abstract class Coupon {
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "coupon_type")
+public abstract class Coupon extends BaseEntity {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String title;
+
+    @Column(nullable = false)
     private Integer initialQuantity;
+
+    @Column(nullable = false)
     private Integer remainingQuantity;
 
     public abstract Integer apply(Integer amount);
@@ -30,7 +44,7 @@ public abstract class Coupon {
 
     public void decreaseRemainingQuantity() {
         if (remainingQuantity == 0) {
-            throw new InsufficientCouponQuantityException();
+            throw new BusinessLogicException(ErrorCode.INSUFFICIENT_COUPON_QUANTITY);
         }
 
         this.remainingQuantity--;

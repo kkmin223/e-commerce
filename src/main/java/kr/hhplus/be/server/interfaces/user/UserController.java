@@ -1,5 +1,8 @@
 package kr.hhplus.be.server.interfaces.user;
 
+import kr.hhplus.be.server.application.user.UserCriteria;
+import kr.hhplus.be.server.application.user.UserFacade;
+import kr.hhplus.be.server.application.user.UserResult;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.domain.user.UserCommand;
 import kr.hhplus.be.server.domain.user.UserService;
@@ -23,6 +26,7 @@ import java.util.List;
 public class UserController implements UserApi {
 
     private final UserService userService;
+    private final UserFacade userFacade;
 
     @Override
     @GetMapping("/{id}/amount")
@@ -44,16 +48,17 @@ public class UserController implements UserApi {
     @Override
     @GetMapping("/{id}/coupons")
     public ResponseEntity<ApiResult<UserResponse.UserCoupon>> getUserCoupons(long id) {
-        User user = userService.getUser(UserCommand.Get.of(id));
-        List<CouponResponse.Coupon> coupons = user.getCouponItems().stream().map(couponItem ->
-            CouponResponse.Coupon.of(couponItem.getId(),
-                couponItem.getCoupon().getTitle(),
-                couponItem.getIsUsed(),
-                couponItem.getCoupon().getDiscountLabel(),
-                couponItem.getCoupon().getCouponType())).toList();
+
+        List<UserResult.UserCoupon> userCoupons = userFacade.listUserCoupons(UserCriteria.UserCouponList.of(id));
+
+        List<CouponResponse.Coupon> coupons = userCoupons
+            .stream()
+            .map(userCoupon
+                -> CouponResponse.Coupon.of(userCoupon.getId(), userCoupon.getCouponName(), userCoupon.getIsUsed(), userCoupon.getDiscountLabel(), userCoupon.getCouponType()))
+            .toList();
 
         return ResponseEntity.ok(
             ApiResult.of(SuccessCode.LIST_USER_COUPONS,
-                UserResponse.UserCoupon.of(user.getId(), coupons)));
+                UserResponse.UserCoupon.of(id, coupons)));
     }
 }

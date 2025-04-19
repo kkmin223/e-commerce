@@ -1,14 +1,13 @@
 package kr.hhplus.be.server.domain.product;
 
-import kr.hhplus.be.server.interfaces.common.exceptions.InvalidOrderQuantityException;
-import kr.hhplus.be.server.interfaces.common.exceptions.InvalidProductIdException;
-import kr.hhplus.be.server.interfaces.common.exceptions.OrderProductNotFoundException;
-import kr.hhplus.be.server.interfaces.common.exceptions.ProductNotFoundException;
+import kr.hhplus.be.server.interfaces.common.ErrorCode;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -24,11 +23,11 @@ public class ProductService {
     public Product getProduct(ProductCommand.Get command) {
         if (command.getProductId() == null
             || command.getProductId() <= 0) {
-            throw new InvalidProductIdException();
+            throw new BusinessLogicException(ErrorCode.INVALID_PRODUCT_ID);
         }
 
         return productRepository.getProduct(command.getProductId())
-            .orElseThrow(ProductNotFoundException::new);
+            .orElseThrow(() -> new BusinessLogicException(ErrorCode.PRODUCT_NOT_FOUND));
     }
 
     public Map<Product, Integer> findProductsWithQuantities(ProductCommand.FindProductsWithQuantity command) {
@@ -37,12 +36,12 @@ public class ProductService {
             .peek(product -> {
                 if (product.getProductId() == null
                     || product.getProductId() <= 0) {
-                    throw new InvalidProductIdException();
+                    throw new BusinessLogicException(ErrorCode.INVALID_PRODUCT_ID);
                 }
 
                 if (product.getQuantity() == null
                     || product.getQuantity() <= 0) {
-                    throw new InvalidOrderQuantityException();
+                    throw new BusinessLogicException(ErrorCode.INVALID_ORDER_QUANTITY);
                 }
             })
             .collect(Collectors.toMap(
@@ -55,7 +54,7 @@ public class ProductService {
         List<Product> products = productRepository.findAllByProductIds(quantityMap.keySet().stream().toList());
 
         if (products.size() != quantityMap.size()) {
-            throw new OrderProductNotFoundException();
+            throw new BusinessLogicException(ErrorCode.ORDER_PRODUCT_NOT_FOUND);
         }
 
         return products.stream()
@@ -63,5 +62,17 @@ public class ProductService {
                 product -> product,
                 product -> quantityMap.get(product.getId())
             ));
+    }
+
+    public List<Product> findTopSellingProduct(ProductCommand.FindTopSellingProduct command) {
+        List<Product> products = productRepository.findAllByProductIds(command.getProductIds());
+
+        Map<Long, Product> productMap = products.stream()
+            .collect(Collectors.toMap(Product::getId, Function.identity()));
+
+        return command.getProductIds()
+            .stream()
+            .map(productMap::get)
+            .toList();
     }
 }

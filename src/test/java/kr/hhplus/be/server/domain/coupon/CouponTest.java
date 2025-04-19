@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.domain.coupon;
 
 import kr.hhplus.be.server.domain.user.User;
-import kr.hhplus.be.server.interfaces.common.exceptions.InsufficientCouponQuantityException;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -32,11 +32,11 @@ class CouponTest {
         TestCoupon testCoupon = new TestCoupon("쿠폰", initialQuantity);
 
         // when
-        InsufficientCouponQuantityException exception = assertThrows(InsufficientCouponQuantityException.class, () -> testCoupon.decreaseRemainingQuantity());
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> testCoupon.decreaseRemainingQuantity());
 
         // then
         assertThat(exception)
-            .extracting(InsufficientCouponQuantityException::getCode, InsufficientCouponQuantityException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(exception.getCode(), exception.getMessage());
     }
 

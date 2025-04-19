@@ -1,8 +1,7 @@
 package kr.hhplus.be.server.domain.coupon;
 
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
-import kr.hhplus.be.server.interfaces.common.exceptions.InsufficientCouponQuantityException;
-import kr.hhplus.be.server.interfaces.common.exceptions.InvalidCouponIdException;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -50,26 +49,26 @@ class CouponServiceTest {
         CouponCommand.Get command = CouponCommand.Get.of(couponId);
 
         // when
-        InvalidCouponIdException exception = assertThrows(InvalidCouponIdException.class, () -> couponService.getIssuableCoupon(command));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> couponService.getIssuableCoupon(command));
 
         // then
         assertThat(exception)
-            .extracting(InvalidCouponIdException::getCode, InvalidCouponIdException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INVALID_COUPON_ID.getCode(), ErrorCode.INVALID_COUPON_ID.getMessage());
     }
 
     @ParameterizedTest
-    @ValueSource(longs = { 0, -1})
+    @ValueSource(longs = {0, -1})
     void 쿠폰_식별자가_0이하이면_쿠폰_반환을_실패한다(Long couponId) {
         // given
         CouponCommand.Get command = CouponCommand.Get.of(couponId);
 
         // when
-        InvalidCouponIdException exception = assertThrows(InvalidCouponIdException.class, () -> couponService.getIssuableCoupon(command));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> couponService.getIssuableCoupon(command));
 
         // then
         assertThat(exception)
-            .extracting(InvalidCouponIdException::getCode, InvalidCouponIdException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INVALID_COUPON_ID.getCode(), ErrorCode.INVALID_COUPON_ID.getMessage());
     }
 
@@ -83,11 +82,11 @@ class CouponServiceTest {
         Mockito.when(couponRepository.getCoupon(couponId)).thenReturn(Optional.of(testCoupon));
 
         // when
-        InsufficientCouponQuantityException exception = assertThrows(InsufficientCouponQuantityException.class, () -> couponService.getIssuableCoupon(command));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> couponService.getIssuableCoupon(command));
 
         // then
         assertThat(exception)
-            .extracting(InsufficientCouponQuantityException::getCode, InsufficientCouponQuantityException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INSUFFICIENT_COUPON_QUANTITY.getCode(), ErrorCode.INSUFFICIENT_COUPON_QUANTITY.getMessage());
     }
 

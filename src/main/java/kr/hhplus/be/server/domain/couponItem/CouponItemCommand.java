@@ -29,4 +29,16 @@ public class CouponItemCommand {
             return new Issue(coupon, user);
         }
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @EqualsAndHashCode
+    public static class FindByUser {
+        private User user;
+
+        public static FindByUser of(User user) {
+            return new FindByUser(user);
+        }
+    }
 }

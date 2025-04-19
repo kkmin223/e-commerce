@@ -2,7 +2,7 @@ package kr.hhplus.be.server.domain.orderItem;
 
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
-import kr.hhplus.be.server.interfaces.common.exceptions.InsufficientStockException;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,11 +37,11 @@ class OrderItemTest {
         Integer orderQuantity = stockQuantity + 1;
 
         // when
-        InsufficientStockException exception = assertThrows(InsufficientStockException.class, () -> OrderItem.create(product, orderQuantity));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> OrderItem.create(product, orderQuantity));
 
         // then
         assertThat(exception)
-            .extracting(InsufficientStockException::getCode, InsufficientStockException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INSUFFICIENT_STOCK.getCode(), ErrorCode.INSUFFICIENT_STOCK.getMessage());
     }
 

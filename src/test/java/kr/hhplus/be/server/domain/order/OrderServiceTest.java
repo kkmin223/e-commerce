@@ -1,12 +1,11 @@
 package kr.hhplus.be.server.domain.order;
 
 import kr.hhplus.be.server.domain.orderItem.OrderItem;
+import kr.hhplus.be.server.domain.orderItem.OrderItemRepository;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
-import kr.hhplus.be.server.interfaces.common.exceptions.InsufficientStockException;
-import kr.hhplus.be.server.interfaces.common.exceptions.OrderProductNotFoundException;
-import kr.hhplus.be.server.interfaces.common.exceptions.UserNotFoundException;
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -35,6 +34,9 @@ class OrderServiceTest {
     @Mock
     private OrderRepository orderRepository;
 
+    @Mock
+    private OrderItemRepository orderItemRepository;
+
     @Test
     void 주문을_생성한다() {
         // given
@@ -51,11 +53,10 @@ class OrderServiceTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        LocalDateTime orderAt = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
+        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, now);
 
-        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, orderAt);
-
-        Mockito.when(orderRepository.save(any(Order.class))).thenReturn(Order.create(user, productQuantities, orderAt));
+        Mockito.when(orderRepository.save(any(Order.class))).thenReturn(Order.create(user, productQuantities, now));
 
         // when
         Order order = orderService.createOrder(command);
@@ -70,8 +71,8 @@ class OrderServiceTest {
             );
 
         assertThat(order)
-            .extracting(Order::getTotalAmount, Order::getOrderAt, Order::getStatus)
-            .containsExactly(product1.getPrice() * orderQuantity1 + product2.getPrice() * orderQuantity2, orderAt, OrderStatus.PAYMENT_PENDING);
+            .extracting(Order::getTotalAmount, Order::getStatus)
+            .containsExactly(product1.getPrice() * orderQuantity1 + product2.getPrice() * orderQuantity2, OrderStatus.PAYMENT_PENDING);
     }
 
     @Test
@@ -85,16 +86,14 @@ class OrderServiceTest {
         Map<Product, Integer> productQuantities = new HashMap<>();
         productQuantities.put(product1, orderQuantity1);
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, orderAt);
+        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, LocalDateTime.now());
 
         // when
-        InsufficientStockException exception = assertThrows(InsufficientStockException.class, () -> orderService.createOrder(command));
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> orderService.createOrder(command));
 
         // then
         assertThat(exception)
-            .extracting(InsufficientStockException::getCode, InsufficientStockException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INSUFFICIENT_STOCK.getCode(), ErrorCode.INSUFFICIENT_STOCK.getMessage());
 
         verify(orderRepository, never()).save(any(Order.class));
@@ -116,16 +115,14 @@ class OrderServiceTest {
         productQuantities.put(product1, orderQuantity1);
         productQuantities.put(product2, orderQuantity2);
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, orderAt);
+        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, LocalDateTime.now());
 
         // when
-        UserNotFoundException exception = Assertions.assertThrows(UserNotFoundException.class, () -> orderService.createOrder(command));
+        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> orderService.createOrder(command));
 
         // then
         assertThat(exception)
-            .extracting(UserNotFoundException::getCode, UserNotFoundException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.USER_NOT_FOUND.getCode(), ErrorCode.USER_NOT_FOUND.getMessage());
     }
 
@@ -136,16 +133,14 @@ class OrderServiceTest {
 
         Map<Product, Integer> productQuantities = null;
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, orderAt);
+        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, LocalDateTime.now());
 
         // when
-        OrderProductNotFoundException exception = Assertions.assertThrows(OrderProductNotFoundException.class, () -> orderService.createOrder(command));
+        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> orderService.createOrder(command));
 
         // then
         assertThat(exception)
-            .extracting(OrderProductNotFoundException::getCode, OrderProductNotFoundException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.ORDER_PRODUCT_NOT_FOUND.getCode(), ErrorCode.ORDER_PRODUCT_NOT_FOUND.getMessage());
     }
 
@@ -156,16 +151,14 @@ class OrderServiceTest {
 
         Map<Product, Integer> productQuantities = new HashMap<>();
 
-        LocalDateTime orderAt = LocalDateTime.now();
-
-        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, orderAt);
+        OrderCommand.CreateOrder command = OrderCommand.CreateOrder.of(user, productQuantities, LocalDateTime.now());
 
         // when
-        OrderProductNotFoundException exception = Assertions.assertThrows(OrderProductNotFoundException.class, () -> orderService.createOrder(command));
+        BusinessLogicException exception = Assertions.assertThrows(BusinessLogicException.class, () -> orderService.createOrder(command));
 
         // then
         assertThat(exception)
-            .extracting(OrderProductNotFoundException::getCode, OrderProductNotFoundException::getMessage)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.ORDER_PRODUCT_NOT_FOUND.getCode(), ErrorCode.ORDER_PRODUCT_NOT_FOUND.getMessage());
     }
 }
