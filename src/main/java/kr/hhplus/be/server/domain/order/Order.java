@@ -87,4 +87,8 @@ public class Order {
         this.status = OrderStatus.COMPLETED;
     }
 
+    public boolean canPay() {
+        return this.status == OrderStatus.PAYMENT_PENDING;
+    }
+
 }

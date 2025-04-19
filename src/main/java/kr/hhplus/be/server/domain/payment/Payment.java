@@ -52,6 +52,11 @@ public class Payment extends BaseEntity {
         if (!this.user.canPay(this.paymentAmount)) {
             throw new BusinessLogicException(ErrorCode.INSUFFICIENT_BALANCE);
         }
+
+        if(!this.order.canPay()) {
+            throw new BusinessLogicException(ErrorCode.CANT_COMPLETE_ORDER);
+        }
+
         user.deductAmount(this.paymentAmount);
         order.completeOrder(this.paymentAmount);
     }

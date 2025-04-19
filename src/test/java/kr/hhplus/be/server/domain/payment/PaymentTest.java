@@ -9,6 +9,7 @@ import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
 import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
@@ -16,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.instancio.Select.field;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class PaymentTest {
@@ -163,5 +165,27 @@ class PaymentTest {
         assertThat(exception)
             .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
             .containsExactly(ErrorCode.INSUFFICIENT_BALANCE.getCode(), ErrorCode.INSUFFICIENT_BALANCE.getMessage());
+    }
+
+    @Test
+    void 주문이_결제대기_상태가_아닌경우_결제를_실패한다() {
+        // given
+        Integer userInitialAmount = 1_000;
+        User user = User.of(1L, userInitialAmount);
+
+        Order order = Instancio.of(Order.class)
+            .set(field(Order::getStatus), OrderStatus.COMPLETED)
+            .set(field(Order::getTotalAmount), userInitialAmount)
+            .create();
+
+        Payment payment = Payment.create(order, user);
+
+        // when
+        BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> payment.processPayment());
+
+        // then
+        assertThat(exception)
+            .extracting(BusinessLogicException::getCode, BusinessLogicException::getMessage)
+            .containsExactly(ErrorCode.CANT_COMPLETE_ORDER.getCode(), ErrorCode.CANT_COMPLETE_ORDER.getMessage());
     }
 }
