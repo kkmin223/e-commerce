@@ -17,7 +17,7 @@ public interface OrderStatisticsJpaRepository extends JpaRepository<OrderStatist
         FROM OrderStatistics os
         WHERE os.statisticDate BETWEEN :startDate AND :endDate
         GROUP BY os.productId
-        ORDER BY SUM(os.soldQuantity) DESC
+        ORDER BY SUM(os.soldQuantity) DESC, os.productId ASC
         """)
     List<Long> findTopSellingProductIdsBetween(
         @Param("startDate") LocalDate startDate,
