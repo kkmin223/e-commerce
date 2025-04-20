@@ -68,7 +68,7 @@ public class CouponFacadeConcurrencyTest {
         executor.shutdown();
 
         // Then
-        Coupon updatedCoupon = couponRepository.getCoupon(coupon.getId()).orElseThrow();
+        Coupon updatedCoupon = couponRepository.findById(coupon.getId()).orElseThrow();
         assertThat(updatedCoupon.getRemainingQuantity()).isZero();
 
         int issuedCount = couponItemRepository.countByCouponId(coupon.getId());

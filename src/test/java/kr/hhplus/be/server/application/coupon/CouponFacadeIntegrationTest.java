@@ -55,7 +55,7 @@ class CouponFacadeIntegrationTest {
             .isEqualTo(initialQuantity - 1);
 
         // 쿠폰 아이템 검증
-        Optional<CouponItem> expectedCouponItem = couponItemRepository.getCouponItem(result.getId());
+        Optional<CouponItem> expectedCouponItem = couponItemRepository.findById(result.getId());
 
         assertThat(expectedCouponItem)
             .isNotNull();
