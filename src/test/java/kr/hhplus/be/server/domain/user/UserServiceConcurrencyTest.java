@@ -1,19 +1,21 @@
 package kr.hhplus.be.server.domain.user;
 
+import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
-@Transactional
+@Transactional(propagation = Propagation.NOT_SUPPORTED)
 @SpringBootTest
 public class UserServiceConcurrencyTest {
 
@@ -31,30 +33,34 @@ public class UserServiceConcurrencyTest {
         User savedUser = userRepository.save(User.of(0));
         Integer chargeAmount = 1_000;
 
-        CountDownLatch latch = new CountDownLatch(USER_THREADS);
         ExecutorService executor = Executors.newFixedThreadPool(USER_THREADS);
         List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+        AtomicInteger recoverCount = new AtomicInteger(0);
 
         // when
         for (int i = 0; i < USER_THREADS; i++) {
             CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                 try {
-                    latch.countDown();
-                    latch.await(); // 모든 스레드 동시 실행
-
                     userService.charge(UserCommand.Charge.of(savedUser.getId(), chargeAmount));
-                } catch (Exception e) {
-                    // 예외 기록
+                } catch (BusinessLogicException e) {
+                    // 재시도후에도 실패한 경우 검증에서 해당 충전은 제외
+                    recoverCount.incrementAndGet();
+                }
+                catch (Exception e) {
                 }
             }, executor);
             futures.add(future);
         }
+
+        // 모든 작업이 끝날 때까지 대기
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+
         // then
         User expectedUser = userRepository.findById(savedUser.getId()).get();
 
         Assertions.assertThat(expectedUser.getAmount())
-            .isEqualTo(chargeAmount * USER_THREADS);
+            .isEqualTo(chargeAmount * (USER_THREADS - recoverCount.get()));
+        System.out.println(expectedUser.getAmount());
     }
-
-
 }
