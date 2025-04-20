@@ -17,7 +17,7 @@ public class CouponService {
             throw new BusinessLogicException(ErrorCode.INVALID_COUPON_ID);
         }
 
-        Coupon coupon = couponRepository.getCoupon(command.getCouponId())
+        Coupon coupon = couponRepository.findById(command.getCouponId())
             .orElseThrow(() -> new BusinessLogicException(ErrorCode.COUPON_NOT_FOUND));
 
         if (!coupon.canIssue()) {

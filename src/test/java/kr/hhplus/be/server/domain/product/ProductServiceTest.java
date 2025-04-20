@@ -52,7 +52,7 @@ class ProductServiceTest {
 
         ProductCommand.Get getCommand = ProductCommand.Get.of(product.getId());
 
-        when(productRepository.getProduct(getCommand.getProductId())).thenReturn(Optional.of(product));
+        when(productRepository.findById(getCommand.getProductId())).thenReturn(Optional.of(product));
         // when
         Product resultProduct = productService.getProduct(getCommand);
 

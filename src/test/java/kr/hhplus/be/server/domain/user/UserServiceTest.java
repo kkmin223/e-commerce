@@ -34,7 +34,7 @@ class UserServiceTest {
         Integer chargeAmount = 100;
         UserCommand.Charge chargeCommand = new UserCommand.Charge(userId, chargeAmount);
 
-        Mockito.when(userRepository.getUser(userId)).thenReturn(Optional.of(User.of(userId, initialAmount)));
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(User.of(userId, initialAmount)));
 
         // when
         User user = userService.charge(chargeCommand);
@@ -53,7 +53,7 @@ class UserServiceTest {
         Integer initialAmount = 100;
         UserCommand.Charge chargeCommand = new UserCommand.Charge(userId, chargeAmount);
 
-        Mockito.when(userRepository.getUser(userId)).thenReturn(Optional.of(User.of(userId, initialAmount)));
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(User.of(userId, initialAmount)));
         //when
         BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> userService.charge(chargeCommand));
 
@@ -105,7 +105,7 @@ class UserServiceTest {
         Integer chargeAmount = 100;
         UserCommand.Charge chargeCommand = new UserCommand.Charge(userId, chargeAmount);
 
-        Mockito.when(userRepository.getUser(userId)).thenReturn(Optional.empty());
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.empty());
         //when
         BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> userService.charge(chargeCommand));
 
@@ -123,7 +123,7 @@ class UserServiceTest {
         Integer chargeAmount = null;
         UserCommand.Charge chargeCommand = new UserCommand.Charge(userId, chargeAmount);
 
-        Mockito.when(userRepository.getUser(userId)).thenReturn(Optional.of(User.of(userId, initialAmount)));
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(User.of(userId, initialAmount)));
         //when
         BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> userService.charge(chargeCommand));
 
@@ -141,7 +141,7 @@ class UserServiceTest {
         Integer initialAmount = 100;
         UserCommand.Charge chargeCommand = new UserCommand.Charge(userId, chargeAmount);
 
-        Mockito.when(userRepository.getUser(userId)).thenReturn(Optional.of(User.of(userId, initialAmount)));
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(User.of(userId, initialAmount)));
         //when
         BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> userService.charge(chargeCommand));
 
@@ -159,7 +159,7 @@ class UserServiceTest {
         Integer initialAmount = 100;
         UserCommand.Get command = new UserCommand.Get(userId);
 
-        Mockito.when(userRepository.getUser(userId)).thenReturn(Optional.of(User.of(userId, initialAmount)));
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(User.of(userId, initialAmount)));
 
         // when
         User user = userService.getUser(command);
@@ -209,7 +209,7 @@ class UserServiceTest {
         Integer initialAmount = 100;
         UserCommand.Get command = new UserCommand.Get(userId);
 
-        Mockito.when(userRepository.getUser(userId)).thenReturn(Optional.empty());
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
         // when
         BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> userService.getUser(command));

@@ -16,7 +16,7 @@ public class CouponItemRepositoryImpl implements CouponItemRepository {
     private final CouponItemJpaRepository couponItemJpaRepository;
 
     @Override
-    public Optional<CouponItem> getCouponItem(Long id) {
+    public Optional<CouponItem> findById(Long id) {
         return couponItemJpaRepository.findById(id);
     }
 

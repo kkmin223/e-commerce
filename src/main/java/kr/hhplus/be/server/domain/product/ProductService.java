@@ -26,7 +26,7 @@ public class ProductService {
             throw new BusinessLogicException(ErrorCode.INVALID_PRODUCT_ID);
         }
 
-        return productRepository.getProduct(command.getProductId())
+        return productRepository.findById(command.getProductId())
             .orElseThrow(() -> new BusinessLogicException(ErrorCode.PRODUCT_NOT_FOUND));
     }
 

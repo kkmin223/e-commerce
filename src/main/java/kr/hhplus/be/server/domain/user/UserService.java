@@ -19,7 +19,7 @@ public class UserService {
             throw new BusinessLogicException(ErrorCode.INVALID_USER_ID);
         }
 
-        User user = userRepository.getUser(command.getUserId())
+        User user = userRepository.findById(command.getUserId())
             .orElseThrow(() -> new BusinessLogicException(ErrorCode.USER_NOT_FOUND));
 
         if (command.getChargeAmount() == null
@@ -38,7 +38,7 @@ public class UserService {
             throw new BusinessLogicException(ErrorCode.INVALID_USER_ID);
         }
 
-        return userRepository.getUser(command.getUserId())
+        return userRepository.findById(command.getUserId())
             .orElseThrow(() -> new BusinessLogicException(ErrorCode.USER_NOT_FOUND));
     }
 
