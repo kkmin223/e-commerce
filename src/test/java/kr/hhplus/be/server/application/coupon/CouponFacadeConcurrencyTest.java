@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ import java.util.concurrent.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Transactional
+@Transactional(propagation = Propagation.NOT_SUPPORTED)
 @SpringBootTest
 public class CouponFacadeConcurrencyTest {
 
@@ -64,8 +65,7 @@ public class CouponFacadeConcurrencyTest {
         }
 
         startLatch.countDown();  // 동시 실행 개시
-        finishLatch.await(10, TimeUnit.SECONDS);  // 최대 10초 대기
-        executor.shutdown();
+        executor.awaitTermination(10, TimeUnit.SECONDS);
 
         // Then
         Coupon updatedCoupon = couponRepository.findById(coupon.getId()).orElseThrow();
@@ -78,6 +78,8 @@ public class CouponFacadeConcurrencyTest {
             .hasSize(THREAD_COUNT - INITIAL_QUANTITY)
             .allMatch(e -> e instanceof BusinessLogicException
                 || e instanceof OptimisticLockingFailureException);
+
+
     }
 
     private List<User> createTestUsers(int count) {
