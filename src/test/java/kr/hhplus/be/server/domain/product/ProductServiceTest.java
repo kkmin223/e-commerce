@@ -103,7 +103,7 @@ class ProductServiceTest {
 
         ProductCommand.FindProductsWithQuantity command = new ProductCommand.FindProductsWithQuantity(List.of(productsWithQuantity1, productsWithQuantity2));
 
-        when(productRepository.findAllByProductIds(List.of(productsWithQuantity1.getProductId(), productsWithQuantity2.getProductId()))).thenReturn(List.of(product1, product2));
+        when(productRepository.findAllByProductIdsForUpdate(List.of(productsWithQuantity1.getProductId(), productsWithQuantity2.getProductId()))).thenReturn(List.of(product1, product2));
 
         // when
         Map<Product, Integer> productsWithQuantities = productService.findProductsWithQuantities(command);
@@ -125,7 +125,7 @@ class ProductServiceTest {
 
         ProductCommand.FindProductsWithQuantity command = new ProductCommand.FindProductsWithQuantity(List.of(productsWithQuantity1, productsWithQuantity2));
 
-        when(productRepository.findAllByProductIds(List.of(productsWithQuantity1.getProductId()))).thenReturn(List.of(product1));
+        when(productRepository.findAllByProductIdsForUpdate(List.of(productsWithQuantity1.getProductId()))).thenReturn(List.of(product1));
 
         // when
         Map<Product, Integer> productsWithQuantities = productService.findProductsWithQuantities(command);
@@ -146,7 +146,7 @@ class ProductServiceTest {
 
         ProductCommand.FindProductsWithQuantity command = new ProductCommand.FindProductsWithQuantity(List.of(productsWithQuantity1, productsWithQuantity2));
 
-        when(productRepository.findAllByProductIds(List.of(productsWithQuantity1.getProductId(), productsWithQuantity2.getProductId()))).thenReturn(List.of(product1));
+        when(productRepository.findAllByProductIdsForUpdate(List.of(productsWithQuantity1.getProductId(), productsWithQuantity2.getProductId()))).thenReturn(List.of(product1));
 
         // when
         BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> productService.findProductsWithQuantities(command));

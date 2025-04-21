@@ -50,8 +50,7 @@ public class ProductService {
                 Integer::sum // 같은 productId면 수량 합산
             ));
 
-
-        List<Product> products = productRepository.findAllByProductIds(quantityMap.keySet().stream().toList());
+        List<Product> products = productRepository.findAllByProductIdsForUpdate(quantityMap.keySet().stream().toList());
 
         if (products.size() != quantityMap.size()) {
             throw new BusinessLogicException(ErrorCode.ORDER_PRODUCT_NOT_FOUND);

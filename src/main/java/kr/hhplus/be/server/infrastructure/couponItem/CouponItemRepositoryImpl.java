@@ -34,4 +34,9 @@ public class CouponItemRepositoryImpl implements CouponItemRepository {
     public int countByCouponId(Long id) {
         return couponItemJpaRepository.countByCouponId(id);
     }
+
+    @Override
+    public Optional<CouponItem> findByIdForUpdate(Long id) {
+        return couponItemJpaRepository.findByIdForUpdate(id);
+    }
 }

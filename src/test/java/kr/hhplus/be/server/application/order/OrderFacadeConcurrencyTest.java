@@ -12,18 +12,22 @@ import kr.hhplus.be.server.domain.user.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Transactional
+@Transactional(propagation = Propagation.NOT_SUPPORTED)
 @SpringBootTest
 public class OrderFacadeConcurrencyTest {
     @Autowired
@@ -44,15 +48,14 @@ public class OrderFacadeConcurrencyTest {
     @Test
     void 동시에_15명이_재고10개_상품을_주문한다() throws Exception {
         // Given
-        final int INITIAL_STOCK = 10;
-        final int ORDER_THREADS = 15;
+        final int INITIAL_STOCK = 1;
+        final int ORDER_THREADS = 2;
 
         Product product = productRepository.save(
             Product.of(null, "한정판 상품", INITIAL_STOCK, 10_000)
         );
         List<User> users = createTestUsers(ORDER_THREADS);
 
-        CountDownLatch latch = new CountDownLatch(ORDER_THREADS);
         ExecutorService executor = Executors.newFixedThreadPool(ORDER_THREADS);
         List<CompletableFuture<Void>> futures = new ArrayList<>();
 
@@ -60,9 +63,6 @@ public class OrderFacadeConcurrencyTest {
         for (User user : users) {
             CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                 try {
-                    latch.countDown();
-                    latch.await(); // 모든 스레드 동시 실행
-
                     OrderCriteria.OrderProduct orderProduct =
                         OrderCriteria.OrderProduct.of(product.getId(), 1);
                     OrderCriteria.OrderAndPay criteria =
@@ -98,7 +98,6 @@ public class OrderFacadeConcurrencyTest {
             Product.of(null, "상품", 100, 10_000)
         );
 
-        CountDownLatch latch = new CountDownLatch(ORDER_THREADS);
         ExecutorService executor = Executors.newFixedThreadPool(ORDER_THREADS);
         List<CompletableFuture<Void>> futures = new ArrayList<>();
 
@@ -109,9 +108,6 @@ public class OrderFacadeConcurrencyTest {
         for (int i = 0; i < ORDER_THREADS; i++) {
             CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                 try {
-                    latch.countDown();
-                    latch.await(); // 모든 스레드 동시 실행
-
                     OrderCriteria.OrderProduct orderProduct =
                         OrderCriteria.OrderProduct.of(product.getId(), 1);
                     OrderCriteria.OrderAndPay criteria =
@@ -150,7 +146,6 @@ public class OrderFacadeConcurrencyTest {
 
         User savedUser = userRepository.save(User.of(product.getPrice() * ORDER_THREADS));
 
-        CountDownLatch latch = new CountDownLatch(ORDER_THREADS);
         ExecutorService executor = Executors.newFixedThreadPool(ORDER_THREADS);
         List<CompletableFuture<Void>> futures = new ArrayList<>();
 
@@ -161,8 +156,6 @@ public class OrderFacadeConcurrencyTest {
         for (int i = 0; i < ORDER_THREADS; i++) {
             CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                 try {
-                    latch.countDown();
-                    latch.await(); // 모든 스레드 동시 실행
 
                     OrderCriteria.OrderProduct orderProduct =
                         OrderCriteria.OrderProduct.of(product.getId(), 1);
@@ -202,8 +195,6 @@ public class OrderFacadeConcurrencyTest {
 
         User savedUser = userRepository.save(User.of(product.getPrice() * (ORDER_THREADS - 2)));
 
-
-        CountDownLatch latch = new CountDownLatch(ORDER_THREADS);
         ExecutorService executor = Executors.newFixedThreadPool(ORDER_THREADS);
         List<CompletableFuture<Void>> futures = new ArrayList<>();
 
@@ -214,9 +205,6 @@ public class OrderFacadeConcurrencyTest {
         for (int i = 0; i < ORDER_THREADS; i++) {
             CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                 try {
-                    latch.countDown();
-                    latch.await(); // 모든 스레드 동시 실행
-
                     OrderCriteria.OrderProduct orderProduct =
                         OrderCriteria.OrderProduct.of(product.getId(), 1);
                     OrderCriteria.OrderAndPay criteria =

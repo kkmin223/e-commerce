@@ -31,4 +31,9 @@ public class UserRepositoryImpl implements UserRepository {
     public Optional<User> findByIdWithOptimisticLock(Long userId) {
         return userJpaRepository.findByIdWithOptimisticLock(userId);
     }
+
+    @Override
+    public Optional<User> findByIdForUpdate(Long userId) {
+        return userJpaRepository.findByIdForUpdate(userId);
+    }
 }

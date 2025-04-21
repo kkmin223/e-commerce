@@ -13,4 +13,6 @@ public interface CouponItemRepository {
     List<CouponItem> findByUser(User user);
 
     int countByCouponId(Long id);
+
+    Optional<CouponItem> findByIdForUpdate(Long id);
 }

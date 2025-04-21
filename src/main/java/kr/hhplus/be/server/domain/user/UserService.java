@@ -60,4 +60,14 @@ public class UserService {
             .orElseThrow(() -> new BusinessLogicException(ErrorCode.USER_NOT_FOUND));
     }
 
+    public User getUserForUpdate(UserCommand.Get command) {
+        if (command.getUserId() == null
+            || command.getUserId() <= 0) {
+            throw new BusinessLogicException(ErrorCode.INVALID_USER_ID);
+        }
+
+        return userRepository.findByIdForUpdate(command.getUserId())
+            .orElseThrow(() -> new BusinessLogicException(ErrorCode.USER_NOT_FOUND));
+    }
+
 }
