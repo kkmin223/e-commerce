@@ -47,7 +47,6 @@ public class CouponFacadeConcurrencyTest {
 
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
         CountDownLatch startLatch = new CountDownLatch(1);
-        CountDownLatch finishLatch = new CountDownLatch(THREAD_COUNT);
         List<Exception> exceptions = new CopyOnWriteArrayList<>();
 
         // When
@@ -58,14 +57,12 @@ public class CouponFacadeConcurrencyTest {
                     couponFacade.IssueCoupon(CouponCriteria.Issue.of(user.getId(), coupon.getId()));
                 } catch (Exception e) {
                     exceptions.add(e);
-                } finally {
-                    finishLatch.countDown();
                 }
             });
         }
 
         startLatch.countDown();  // 동시 실행 개시
-        executor.awaitTermination(10, TimeUnit.SECONDS);
+        executor.awaitTermination(3, TimeUnit.SECONDS);
 
         // Then
         Coupon updatedCoupon = couponRepository.findById(coupon.getId()).orElseThrow();
@@ -78,8 +75,6 @@ public class CouponFacadeConcurrencyTest {
             .hasSize(THREAD_COUNT - INITIAL_QUANTITY)
             .allMatch(e -> e instanceof BusinessLogicException
                 || e instanceof OptimisticLockingFailureException);
-
-
     }
 
     private List<User> createTestUsers(int count) {
