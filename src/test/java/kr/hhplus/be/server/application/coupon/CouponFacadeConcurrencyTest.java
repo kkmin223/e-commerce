@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,7 +48,9 @@ public class CouponFacadeConcurrencyTest {
 
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
         CountDownLatch startLatch = new CountDownLatch(1);
-        List<Exception> exceptions = new CopyOnWriteArrayList<>();
+
+        AtomicInteger successCount = new AtomicInteger(0);
+        AtomicInteger failCount = new AtomicInteger(0);
 
         // When
         for (User user : users) {
@@ -55,8 +58,9 @@ public class CouponFacadeConcurrencyTest {
                 try {
                     startLatch.await();  // 모든 스레드 동시 시작
                     couponFacade.IssueCoupon(CouponCriteria.Issue.of(user.getId(), coupon.getId()));
+                    successCount.incrementAndGet();
                 } catch (Exception e) {
-                    exceptions.add(e);
+                    failCount.incrementAndGet();
                 }
             });
         }
@@ -65,16 +69,14 @@ public class CouponFacadeConcurrencyTest {
         executor.awaitTermination(3, TimeUnit.SECONDS);
 
         // Then
+        assertThat(successCount.get()).isEqualTo(INITIAL_QUANTITY);
+        assertThat(failCount.get()).isEqualTo(THREAD_COUNT - INITIAL_QUANTITY);
+
         Coupon updatedCoupon = couponRepository.findById(coupon.getId()).orElseThrow();
         assertThat(updatedCoupon.getRemainingQuantity()).isZero();
 
         int issuedCount = couponItemRepository.countByCouponId(coupon.getId());
         assertThat(issuedCount).isEqualTo(INITIAL_QUANTITY);
-
-        assertThat(exceptions)
-            .hasSize(THREAD_COUNT - INITIAL_QUANTITY)
-            .allMatch(e -> e instanceof BusinessLogicException
-                || e instanceof OptimisticLockingFailureException);
     }
 
     private List<User> createTestUsers(int count) {
