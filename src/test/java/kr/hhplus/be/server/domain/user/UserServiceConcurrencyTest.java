@@ -2,11 +2,11 @@ package kr.hhplus.be.server.domain.user;
 
 import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
-@Transactional(propagation = Propagation.NOT_SUPPORTED)
 @SpringBootTest
 public class UserServiceConcurrencyTest {
 
@@ -24,6 +23,14 @@ public class UserServiceConcurrencyTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @AfterEach
+    public void tearDown() {
+        jdbcTemplate.execute("TRUNCATE TABLE users");
+    }
 
     @Test
     void 동시에_같은_사용자의_잔액을_15명이_충전한다() {
@@ -46,8 +53,7 @@ public class UserServiceConcurrencyTest {
                 } catch (BusinessLogicException e) {
                     // 재시도후에도 실패한 경우 검증에서 해당 충전은 제외
                     recoverCount.incrementAndGet();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                 }
             }, executor);
             futures.add(future);

@@ -9,11 +9,11 @@ import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.ProductRepository;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.domain.user.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,7 +27,6 @@ import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Transactional(propagation = Propagation.NOT_SUPPORTED)
 @SpringBootTest
 public class OrderFacadeConcurrencyTest {
     @Autowired
@@ -44,6 +43,21 @@ public class OrderFacadeConcurrencyTest {
 
     @Autowired
     private CouponItemRepository couponItemRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @AfterEach
+    public void tearDown() {
+        jdbcTemplate.execute("TRUNCATE TABLE coupon");
+        jdbcTemplate.execute("TRUNCATE TABLE coupon_item");
+        jdbcTemplate.execute("TRUNCATE TABLE users");
+        jdbcTemplate.execute("TRUNCATE TABLE product");
+        jdbcTemplate.execute("TRUNCATE TABLE orders");
+        jdbcTemplate.execute("TRUNCATE TABLE payment");
+        jdbcTemplate.execute("TRUNCATE TABLE order_item");
+        jdbcTemplate.execute("TRUNCATE TABLE order_statistics");
+    }
 
     @Test
     void 동시에_15명이_재고10개_상품을_주문한다() throws Exception {

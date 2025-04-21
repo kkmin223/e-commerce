@@ -6,22 +6,22 @@ import kr.hhplus.be.server.domain.coupon.TestCoupon;
 import kr.hhplus.be.server.domain.couponItem.CouponItemRepository;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.domain.user.UserRepository;
-import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.OptimisticLockingFailureException;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@Transactional(propagation = Propagation.NOT_SUPPORTED)
 @SpringBootTest
 public class CouponFacadeConcurrencyTest {
 
@@ -36,6 +36,16 @@ public class CouponFacadeConcurrencyTest {
 
     @Autowired
     private CouponItemRepository couponItemRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @AfterEach
+    public void tearDown() {
+        jdbcTemplate.execute("TRUNCATE TABLE coupon");
+        jdbcTemplate.execute("TRUNCATE TABLE coupon_item");
+        jdbcTemplate.execute("TRUNCATE TABLE users");
+    }
 
     @Test
     void 동시에_20명이_쿠폰을_요청한다() throws InterruptedException {
