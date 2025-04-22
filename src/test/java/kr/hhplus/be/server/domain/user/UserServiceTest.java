@@ -34,7 +34,7 @@ class UserServiceTest {
         Integer chargeAmount = 100;
         UserCommand.Charge chargeCommand = new UserCommand.Charge(userId, chargeAmount);
 
-        Mockito.when(userRepository.findByIdWithOptimisticLock(userId)).thenReturn(Optional.of(User.of(userId, initialAmount)));
+        Mockito.when(userRepository.findByIdForUpdate(userId)).thenReturn(Optional.of(User.of(userId, initialAmount)));
 
         // when
         User user = userService.charge(chargeCommand);
@@ -104,7 +104,7 @@ class UserServiceTest {
         Integer chargeAmount = 100;
         UserCommand.Charge chargeCommand = new UserCommand.Charge(userId, chargeAmount);
 
-        Mockito.when(userRepository.findByIdWithOptimisticLock(userId)).thenReturn(Optional.empty());
+        Mockito.when(userRepository.findByIdForUpdate(userId)).thenReturn(Optional.empty());
         //when
         BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> userService.charge(chargeCommand));
 
