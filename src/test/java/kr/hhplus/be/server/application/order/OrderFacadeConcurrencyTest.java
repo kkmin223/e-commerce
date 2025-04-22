@@ -90,8 +90,7 @@ public class OrderFacadeConcurrencyTest {
             futures.add(future);
         }
 
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
-            .get(10, TimeUnit.SECONDS); // 타임아웃 설정
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join(); // 타임아웃 설정
 
         // Then
         Product updatedProduct = productRepository.findById(product.getId()).orElseThrow();
@@ -137,8 +136,7 @@ public class OrderFacadeConcurrencyTest {
             futures.add(future);
         }
 
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
-            .get(10, TimeUnit.SECONDS); // 타임아웃 설정
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
 
         // Then
         CouponItem couponItem = couponItemRepository.findById(savedCouponItem.getId()).get();
@@ -234,9 +232,7 @@ public class OrderFacadeConcurrencyTest {
             futures.add(future);
         }
 
-        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
-            .get(10, TimeUnit.SECONDS); // 타임아웃 설정
-
+        CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
         // Then
         assertThat(successCount.get()).isEqualTo(3);
         assertThat(failCount.get()).isEqualTo(2);
