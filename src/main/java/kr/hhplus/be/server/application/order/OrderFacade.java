@@ -38,11 +38,6 @@ public class OrderFacade {
     private final CouponItemService couponItemService;
     private final DataPlatform dataPlatform;
 
-    @Retryable(
-        value = {OptimisticLockException.class, ObjectOptimisticLockingFailureException.class}, // 재시도할 예외
-        maxAttempts = 5,
-        backoff = @Backoff(delay = 100) // 재시도 간 딜레이(ms),
-    )
     @Transactional
     public OrderResult.OrderAndPay orderAndPay(OrderCriteria.OrderAndPay criteria) {
 
