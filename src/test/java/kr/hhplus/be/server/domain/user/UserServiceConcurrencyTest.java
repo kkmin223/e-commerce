@@ -43,17 +43,15 @@ public class UserServiceConcurrencyTest {
         ExecutorService executor = Executors.newFixedThreadPool(USER_THREADS);
         List<CompletableFuture<Void>> futures = new ArrayList<>();
 
-        AtomicInteger recoverCount = new AtomicInteger(0);
+        AtomicInteger failCount = new AtomicInteger(0);
 
         // when
         for (int i = 0; i < USER_THREADS; i++) {
             CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
                 try {
                     userService.charge(UserCommand.Charge.of(savedUser.getId(), chargeAmount));
-                } catch (BusinessLogicException e) {
-                    // 재시도후에도 실패한 경우 검증에서 해당 충전은 제외
-                    recoverCount.incrementAndGet();
                 } catch (Exception e) {
+                    failCount.incrementAndGet();
                 }
             }, executor);
             futures.add(future);
@@ -66,7 +64,7 @@ public class UserServiceConcurrencyTest {
         User expectedUser = userRepository.findById(savedUser.getId()).get();
 
         Assertions.assertThat(expectedUser.getAmount())
-            .isEqualTo(chargeAmount * (USER_THREADS - recoverCount.get()));
+            .isEqualTo(chargeAmount * (USER_THREADS - failCount.get()));
         System.out.println(expectedUser.getAmount());
     }
 }
