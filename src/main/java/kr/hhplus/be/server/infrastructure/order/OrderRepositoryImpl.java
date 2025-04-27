@@ -19,7 +19,7 @@ public class OrderRepositoryImpl implements OrderRepository {
     }
 
     @Override
-    public Optional<Order> getOrder(Long id) {
+    public Optional<Order> findById(Long id) {
         return orderJpaRepository.findById(id);
     }
 }

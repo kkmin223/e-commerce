@@ -3,6 +3,7 @@ package kr.hhplus.be.server.domain.coupon;
 import java.util.Optional;
 
 public interface CouponRepository {
-    Optional<Coupon> getCoupon(Long id);
+    Optional<Coupon> findById(Long id);
     Coupon save(Coupon coupon);
+    Optional<Coupon> findByIdForUpdate(Long id);
 }

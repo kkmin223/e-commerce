@@ -5,14 +5,19 @@ import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
 import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.instancio.Select.field;
 
 class OrderTest {
 
@@ -182,4 +187,34 @@ class OrderTest {
         // then
         assertThat(order.getStatus()).isEqualTo(OrderStatus.COMPLETED);
     }
+
+    @Test
+    void 주문_상태가_결제_대기인_경우_결제_가능_상태를_반환한다() {
+        // given
+        Order order = Instancio.of(Order.class)
+            .set(field(Order::getStatus), OrderStatus.PAYMENT_PENDING)
+            .create();
+
+        // when
+        boolean canPay = order.canPay();
+
+        // then
+        assertThat(canPay).isTrue();
+    }
+
+    @ParameterizedTest
+    @EnumSource(value = OrderStatus.class, names = {"COMPLETED", "FAILED"})
+    void 주문_상태가_결제_대기가_아닌_경우_결제_불가능_상태를_반환한다(OrderStatus orderStatus) {
+        // given
+        Order order = Instancio.of(Order.class)
+            .set(field(Order::getStatus), orderStatus)
+            .create();
+
+        // when
+        boolean canPay = order.canPay();
+
+        // then
+        assertThat(canPay).isFalse();
+    }
+
 }

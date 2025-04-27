@@ -24,7 +24,9 @@ public enum ErrorCode implements Code {
     COUPON_NOT_FOUND("COUPON_NOT_FOUND", "쿠폰이 존재하지 않습니다."),
     INVALID_COUPON_ID("INVALID_COUPON_ID", "쿠폰 식별자가 유효하지 않습니다."),
     INVALID_DATE("INVALID_DATE", "날짜가 유효하지 않습니다."),
-    INVALID_GET_COUNT("INVALID_GET_COUNT", "조회 개수가 유효하지 않습니다.")
+    INVALID_GET_COUNT("INVALID_GET_COUNT", "조회 개수가 유효하지 않습니다."),
+    CANT_COMPLETE_ORDER("CANT_COMPLETE_ORDER", "주문 상태가 결제 대기인 경우에만 결제를 진행할 수 있습니다"),
+    CONCURRENCY_CHARGE_USER("CONCURRENCY_CHARGE_USER", "동시에 충전할 수 있는 횟수를 초과했습니다.")
     ;
 
     private final String code;

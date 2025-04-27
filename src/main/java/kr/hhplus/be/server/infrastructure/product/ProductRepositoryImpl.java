@@ -20,7 +20,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public Optional<Product> getProduct(Long id) {
+    public Optional<Product> findById(Long id) {
         return productJpaRepository.findById(id);
     }
 
@@ -32,5 +32,10 @@ public class ProductRepositoryImpl implements ProductRepository {
     @Override
     public Product save(Product product) {
         return productJpaRepository.save(product);
+    }
+
+    @Override
+    public List<Product> findAllByProductIdsForUpdate(List<Long> productIds) {
+        return productJpaRepository.findAllByProductIdsForUpdate(productIds);
     }
 }

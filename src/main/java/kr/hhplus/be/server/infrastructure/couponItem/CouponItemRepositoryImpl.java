@@ -16,7 +16,7 @@ public class CouponItemRepositoryImpl implements CouponItemRepository {
     private final CouponItemJpaRepository couponItemJpaRepository;
 
     @Override
-    public Optional<CouponItem> getCouponItem(Long id) {
+    public Optional<CouponItem> findById(Long id) {
         return couponItemJpaRepository.findById(id);
     }
 
@@ -33,5 +33,10 @@ public class CouponItemRepositoryImpl implements CouponItemRepository {
     @Override
     public int countByCouponId(Long id) {
         return couponItemJpaRepository.countByCouponId(id);
+    }
+
+    @Override
+    public Optional<CouponItem> findByIdForUpdate(Long id) {
+        return couponItemJpaRepository.findByIdForUpdate(id);
     }
 }

@@ -20,6 +20,9 @@ public class User extends BaseEntity {
     @Embedded
     private Amount amount;
 
+    @Version
+    private Long version;
+
     private User(Long userId, Amount amount) {
         this.id = userId;
         this.amount = amount;

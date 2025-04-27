@@ -88,7 +88,7 @@ public class OrderFacadeIntegrationTest {
             .isTrue();
 
         // 주문 검증
-        Order expectedOrder = orderRepository.getOrder(result.getOrderId())
+        Order expectedOrder = orderRepository.findById(result.getOrderId())
             .orElseThrow();
 
         assertThat(expectedOrder)
@@ -146,7 +146,7 @@ public class OrderFacadeIntegrationTest {
             .containsExactly(expectedTotalAmount, expectedPayAmount, OrderStatus.COMPLETED);
 
         // 주문 검증
-        Order expectedOrder = orderRepository.getOrder(result.getOrderId())
+        Order expectedOrder = orderRepository.findById(result.getOrderId())
             .orElseThrow();
 
         assertThat(expectedOrder)

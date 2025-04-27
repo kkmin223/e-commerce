@@ -12,10 +12,7 @@ import kr.hhplus.be.server.interfaces.coupon.CouponResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -40,7 +37,7 @@ public class UserController implements UserApi {
 
     @Override
     @PostMapping("/{id}/amount/charge")
-    public ResponseEntity<ApiResult<UserResponse.UserAmount>> chargeUserAmount(long id, UserRequest.Charge chargeRequest) {
+    public ResponseEntity<ApiResult<UserResponse.UserAmount>> chargeUserAmount(long id, @RequestBody UserRequest.Charge chargeRequest) {
         User user = userService.charge(chargeRequest.toCommand(id));
         return ResponseEntity.ok(ApiResult.of(SuccessCode.CHARGE_USER_AMOUNT, new UserResponse.UserAmount(user.getId(), user.getAmount())));
     }
