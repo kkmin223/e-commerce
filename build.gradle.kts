@@ -43,6 +43,15 @@ dependencies {
 	implementation("org.springframework.retry:spring-retry")
 	implementation("org.springframework:spring-aspects")
 
+	// Cache
+	implementation("org.springframework.boot:spring-boot-starter-cache")
+
+	// Cache
+	implementation("org.springframework.boot:spring-boot-starter-cache")
+
+	// redis
+	implementation("org.redisson:redisson-spring-boot-starter:3.45.1")
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
 	// Swagger
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
