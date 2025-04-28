@@ -8,9 +8,7 @@ import kr.hhplus.be.server.interfaces.common.SuccessCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,7 +20,7 @@ public class CouponController implements CouponApi {
 
     @Override
     @PostMapping("/{id}/issue")
-    public ResponseEntity<ApiResult<CouponResponse.Coupon>> issueCoupon(long id, CouponRequest.Issue issueRequest) {
+    public ResponseEntity<ApiResult<CouponResponse.Coupon>> issueCoupon(@PathVariable long id, @RequestBody CouponRequest.Issue issueRequest) {
 
         CouponResult.Issue issueResult = couponFacade.IssueCoupon(CouponCriteria.Issue.of(id, issueRequest.getUserId()));
 

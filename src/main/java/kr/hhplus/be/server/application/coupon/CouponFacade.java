@@ -10,6 +10,7 @@ import kr.hhplus.be.server.domain.couponItem.CouponItemService;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.domain.user.UserCommand;
 import kr.hhplus.be.server.domain.user.UserService;
+import kr.hhplus.be.server.lock.aop.DistributedLock;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,9 @@ public class CouponFacade {
     private final UserService userService;
     private final CouponItemService couponItemService;
 
+    @DistributedLock(
+        keys = "T(kr.hhplus.be.server.lock.LockKeyGenerator).generateForIssueCoupon(#criteria)"
+    )
     @Transactional
     public CouponResult.Issue IssueCoupon(CouponCriteria.Issue criteria) {
 
