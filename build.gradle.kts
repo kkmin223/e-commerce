@@ -40,9 +40,13 @@ dependencies {
 	annotationProcessor("org.projectlombok:lombok")
 	testCompileOnly("org.projectlombok:lombok")
 	testAnnotationProcessor("org.projectlombok:lombok")
-	implementation("org.springframework.retry:spring-retry")
 	implementation("org.springframework:spring-aspects")
+	implementation("org.springframework.boot:spring-boot-starter-aop")
+	implementation("org.springframework.retry:spring-retry")
 
+	// redis
+	implementation("org.redisson:redisson-spring-boot-starter:3.45.1")
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
 	// Swagger
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5")
