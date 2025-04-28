@@ -24,7 +24,7 @@ public class RedisCacheConfig {
 
         // 인기 상품 Product Id는 1일 유지
         cacheConfigurations.put("TopSellingProductIds", RedisCacheConfiguration.defaultCacheConfig()
-            .entryTtl(Duration.ofDays(1)));
+            .entryTtl(Duration.ofHours(25)));
 
         return RedisCacheManager.builder(redisConnectionFactory)
             .cacheDefaults(defaultConfig)
