@@ -44,6 +44,9 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-aop")
 	implementation("org.springframework.retry:spring-retry")
 
+	// Cache
+	implementation("org.springframework.boot:spring-boot-starter-cache")
+
 	// redis
 	implementation("org.redisson:redisson-spring-boot-starter:3.45.1")
 	implementation("org.springframework.boot:spring-boot-starter-data-redis")
