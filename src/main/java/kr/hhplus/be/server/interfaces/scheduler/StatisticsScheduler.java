@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.scheduler;
+package kr.hhplus.be.server.interfaces.scheduler;
 
 import kr.hhplus.be.server.application.orderStatistics.OrderStatisticsCriteria;
 import kr.hhplus.be.server.application.orderStatistics.OrderStatisticsFacade;

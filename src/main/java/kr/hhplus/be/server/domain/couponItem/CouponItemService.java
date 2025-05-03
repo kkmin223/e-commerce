@@ -14,7 +14,7 @@ public class CouponItemService {
     private final CouponItemRepository couponItemRepository;
 
     public CouponItem getCouponItem(CouponItemCommand.Get command) {
-        return couponItemRepository.findByIdForUpdate(command.getCouponItemId())
+        return couponItemRepository.findById(command.getCouponItemId())
             .orElseThrow(() -> new BusinessLogicException(ErrorCode.COUPON_NOT_FOUND));
     }
 

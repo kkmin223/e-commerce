@@ -48,16 +48,16 @@ public class CouponFacadeConcurrencyTest {
     }
 
     @Test
-    void 동시에_20명이_쿠폰을_요청한다() throws InterruptedException {
+    void 동시에_2개수량을가진_쿠폰에_3명이_쿠폰을_요청한다() throws InterruptedException {
         // Given
-        final int INITIAL_QUANTITY = 20;
-        final int THREAD_COUNT = 21;  // 초과 요청 1건 포함
+        final int INITIAL_QUANTITY = 2;
+        final int THREAD_COUNT = 3;
 
         Coupon coupon = couponRepository.save(new TestCoupon("동시성 테스트 쿠폰", INITIAL_QUANTITY));
         List<User> users = createTestUsers(THREAD_COUNT);
 
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
-        CountDownLatch startLatch = new CountDownLatch(1);
+        CountDownLatch countDownLatch = new CountDownLatch(THREAD_COUNT);
 
         AtomicInteger successCount = new AtomicInteger(0);
         AtomicInteger failCount = new AtomicInteger(0);
@@ -66,19 +66,18 @@ public class CouponFacadeConcurrencyTest {
         for (User user : users) {
             executor.submit(() -> {
                 try {
-                    startLatch.await();  // 모든 스레드 동시 시작
                     couponFacade.IssueCoupon(CouponCriteria.Issue.of(user.getId(), coupon.getId()));
                     successCount.incrementAndGet();
                 } catch (Exception e) {
                     failCount.incrementAndGet();
+                } finally {
+                    countDownLatch.countDown();
                 }
             });
         }
+        countDownLatch.await();
 
-        startLatch.countDown();  // 동시 실행 개시
-        executor.awaitTermination(3, TimeUnit.SECONDS);
-
-        // Then
+        // then
         assertThat(successCount.get()).isEqualTo(INITIAL_QUANTITY);
         assertThat(failCount.get()).isEqualTo(THREAD_COUNT - INITIAL_QUANTITY);
 

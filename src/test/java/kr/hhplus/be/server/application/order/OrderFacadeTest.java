@@ -60,7 +60,7 @@ class OrderFacadeTest {
         CouponItem couponItem = CouponItem.of(user, AmountCoupon.of("쿠폰", 1, 100), false);
         Payment payment = Payment.create(order, user);
 
-        Mockito.when(userService.getUserForUpdate(any())).thenReturn(user);
+        Mockito.when(userService.getUser(any())).thenReturn(user);
         Mockito.when(productService.findProductsWithQuantities(any())).thenReturn(productsWithQuantities);
         Mockito.when(orderService.createOrder(any())).thenReturn(order);
         Mockito.when(couponItemService.getCouponItem(any())).thenReturn(couponItem);
@@ -72,7 +72,7 @@ class OrderFacadeTest {
 
         // then
         InOrder inOrder = Mockito.inOrder(orderService, userService, productService, couponItemService, paymentService, dataPlatform);
-        inOrder.verify(userService).getUserForUpdate(any());
+        inOrder.verify(userService).getUser(any());
         inOrder.verify(productService).findProductsWithQuantities(any());
         inOrder.verify(orderService).createOrder(any());
         inOrder.verify(couponItemService).getCouponItem(any());

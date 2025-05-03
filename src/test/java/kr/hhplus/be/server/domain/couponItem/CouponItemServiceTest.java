@@ -95,7 +95,7 @@ class CouponItemServiceTest {
         CouponItem couponItem = CouponItem.of(user, coupon, Boolean.FALSE);
 
 
-        Mockito.when(couponItemRepository.findByIdForUpdate(command.getCouponItemId())).thenReturn(Optional.of(couponItem));
+        Mockito.when(couponItemRepository.findById(command.getCouponItemId())).thenReturn(Optional.of(couponItem));
 
         // when
         CouponItem result = couponItemService.getCouponItem(command);
@@ -112,7 +112,7 @@ class CouponItemServiceTest {
         CouponItemCommand.Get command = CouponItemCommand.Get.of(1L);
 
 
-        Mockito.when(couponItemRepository.findByIdForUpdate(command.getCouponItemId())).thenReturn(Optional.empty());
+        Mockito.when(couponItemRepository.findById(command.getCouponItemId())).thenReturn(Optional.empty());
 
         // when
         BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> couponItemService.getCouponItem(command));
