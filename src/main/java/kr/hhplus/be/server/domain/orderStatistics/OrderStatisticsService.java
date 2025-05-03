@@ -5,6 +5,7 @@ import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
 import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public class OrderStatisticsService {
         orderStatisticsRepository.saveAll(statisticsList);
     }
 
+    @Cacheable(value = "TopSellingProductIds", key = "{#command.startDate, #command.endDate, #command.count}")
     public List<Long> getTopSellingProductIds(OrderStatisticsCommand.GetTopSellingProductIds command) {
         if (command.getCount() <= 0) {
             throw new BusinessLogicException(ErrorCode.INVALID_GET_COUNT);
