@@ -40,8 +40,9 @@ dependencies {
 	annotationProcessor("org.projectlombok:lombok")
 	testCompileOnly("org.projectlombok:lombok")
 	testAnnotationProcessor("org.projectlombok:lombok")
-	implementation("org.springframework.retry:spring-retry")
 	implementation("org.springframework:spring-aspects")
+	implementation("org.springframework.boot:spring-boot-starter-aop")
+	implementation("org.springframework.retry:spring-retry")
 
 	// Cache
 	implementation("org.springframework.boot:spring-boot-starter-cache")
