@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,7 +13,6 @@ import jakarta.validation.constraints.Min;
 import kr.hhplus.be.server.interfaces.common.ApiResult;
 import kr.hhplus.be.server.interfaces.common.ErrorResult;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
 
 @Tag(
     name = "COUPON API",
@@ -59,8 +59,8 @@ public interface CouponApi {
             description = "쿠폰 식별자",
             example = "1"
         )
-        @PathVariable
         @Min(value = 1, message = "쿠폰 식별자가 유효하지 않습니다.") long id,
+        @RequestBody
         @Valid
         CouponRequest.Issue couponIssueRequest);
 }
