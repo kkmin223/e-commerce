@@ -3,10 +3,14 @@ package kr.hhplus.be.server.domain.product;
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
 import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -73,5 +77,40 @@ public class ProductService {
             .stream()
             .map(productMap::get)
             .toList();
+    }
+
+    public List<ProductInfo.ProductSalesInfo> getProductSalesInfo(ProductCommand.GetProductSalesInfo command) {
+        Set<ZSetOperations.TypedTuple<String>> productSales = productRepository.getProductSales(command.getSearchDate());
+
+        return productSales.stream()
+            .map(ProductInfo.ProductSalesInfo::of)
+            .toList();
+    }
+
+    @Cacheable(value = "TopProduct", key = "{#command.startDate, #command.endDate, #command.rankCount}")
+    public List<ProductInfo.ProductRanking> getTopProduct(ProductCommand.GetTopProduct command) {
+        Set<ZSetOperations.TypedTuple<String>> productRankings = productRepository.getProductRanking(command.getStartDate(), command.getEndDate(), command.getRankCount());
+
+        List<Long> productIds = productRankings.stream()
+            .map(productRanking -> Long.valueOf(productRanking.getValue()))
+            .toList();
+
+        List<Product> products = productRepository.findAllByProductIds(productIds);
+
+        List<ProductInfo.ProductRanking> result = new ArrayList<>();
+        int ranking = 1;
+        for (ZSetOperations.TypedTuple<String> productRanking : productRankings) {
+            Long productId = Long.valueOf(productRanking.getValue());
+            Integer soldQuantity = productRanking.getScore().intValue();
+
+            Product product = products.stream()
+                .filter(p -> productId.equals(p.getId()))
+                .findFirst()
+                .get();
+
+            result.add(ProductInfo.ProductRanking.of(ranking, product.getId(), product.getName(), soldQuantity));
+        }
+
+        return result;
     }
 }
