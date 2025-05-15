@@ -37,4 +37,35 @@ public class ProductResponse {
             return new Product(id, name, price, quantity);
         }
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Schema(description = "인기 상품 응답 DTO")
+    public static class ProductRanking {
+        @Schema(
+            description = "인기 상품 순위",
+            example = "1"
+        )
+        private Integer ranking;
+        @Schema(
+            description = "상품 고유번호",
+            example = "1"
+        )
+        private Long id;
+        @Schema(
+            description = "상품명",
+            example = "상품1"
+        )
+        private String name;
+        @Schema(
+            description = "판매 수량",
+            example = "10"
+        )
+        private Integer soldQuantity;
+
+        public static ProductRanking of(Integer ranking, Long id, String name, Integer soldQuantity) {
+            return new ProductRanking(ranking, id, name, soldQuantity);
+        }
+    }
 }

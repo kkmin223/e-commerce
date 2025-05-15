@@ -19,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -43,6 +44,8 @@ class OrderFacadeTest {
     private CouponItemService couponItemService;
     @Mock
     private DataPlatform dataPlatform;
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
 
     @Test
     void 주문을_생성하고_결재를_진행한다() {

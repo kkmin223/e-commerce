@@ -3,6 +3,7 @@ package kr.hhplus.be.server.domain.orderStatistics;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderRepository;
 import kr.hhplus.be.server.domain.product.Product;
+import kr.hhplus.be.server.domain.product.ProductInfo;
 import kr.hhplus.be.server.domain.product.ProductRepository;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.domain.user.UserRepository;
@@ -63,6 +64,32 @@ public class OrderStatisticsServiceIntegrationTest {
             .containsExactlyInAnyOrder(
                 Tuple.tuple(statisticDate, savedProduct.getId(), 1),
                 Tuple.tuple(statisticDate, savedProduct2.getId(), 3)
+            );
+    }
+
+    @Test
+    void 날짜별_상품_판매_수량을_입력한다() {
+        // given
+        LocalDate statisticDate = LocalDate.now();
+        long productId1 = 1L;
+        int quantity1 = 5;
+        long productId2 = 2L;
+        int quantity2 = 3;
+        List<ProductInfo.ProductSalesInfo> productSalesInfos = List.of(new ProductInfo.ProductSalesInfo(productId1, quantity1), new ProductInfo.ProductSalesInfo(productId2, quantity2));
+
+        OrderStatisticsCommand.GenerateDailyStatisticsWithRedis command = OrderStatisticsCommand.GenerateDailyStatisticsWithRedis.of(statisticDate, productSalesInfos);
+        // when
+        orderStatisticsService.generateDailyStatisticsWithRedis(command);
+
+        // then
+        List<OrderStatistics> expected = orderStatisticsRepository.findByStatisticDate(statisticDate);
+
+        Assertions.assertThat(expected)
+            .hasSize(2)
+            .extracting(OrderStatistics::getStatisticDate, OrderStatistics::getProductId, OrderStatistics::getSoldQuantity)
+            .containsExactlyInAnyOrder(
+                Tuple.tuple(statisticDate, productId1, quantity1),
+                Tuple.tuple(statisticDate, productId2, quantity2)
             );
 
     }

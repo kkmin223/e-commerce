@@ -1,10 +1,9 @@
 package kr.hhplus.be.server.interfaces.product;
 
-import kr.hhplus.be.server.application.product.ProductCriteria;
 import kr.hhplus.be.server.application.product.ProductFacade;
-import kr.hhplus.be.server.application.product.ProductResult;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.ProductCommand;
+import kr.hhplus.be.server.domain.product.ProductInfo;
 import kr.hhplus.be.server.domain.product.ProductService;
 import kr.hhplus.be.server.interfaces.common.ApiResult;
 import kr.hhplus.be.server.interfaces.common.SuccessCode;
@@ -52,13 +51,13 @@ public class ProductController implements ProductApi {
 
     @Override
     @GetMapping("/popular")
-    public ResponseEntity<ApiResult<List<ProductResponse.Product>>> listPopularProduct() {
+    public ResponseEntity<ApiResult<List<ProductResponse.ProductRanking>>> listPopularProduct() {
         LocalDate today = LocalDate.now();
-        List<ProductResult.Product> topSellingProducts = productFacade.getTopSellingProducts(ProductCriteria.GetTopSellingProducts.of(today.minusDays(3), today, 5));
+        List<ProductInfo.ProductRanking> topProduct = productService.getTopProduct(ProductCommand.GetTopProduct.of(today.minusDays(3), today, 5));
 
-        List<ProductResponse.Product> result = topSellingProducts
+        List<ProductResponse.ProductRanking> result = topProduct
             .stream()
-            .map(product -> ProductResponse.Product.of(product.getId(), product.getName(), product.getPrice(), product.getQuantity()))
+            .map(product -> ProductResponse.ProductRanking.of(product.getRanking(), product.getProductId(), product.getProductName(), product.getSoldQuantity()))
             .toList();
 
         return ResponseEntity.ok(ApiResult.of(SuccessCode.LIST_POPULAR_PRODUCT, result));

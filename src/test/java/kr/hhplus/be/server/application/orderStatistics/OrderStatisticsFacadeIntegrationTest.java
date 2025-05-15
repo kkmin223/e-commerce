@@ -11,12 +11,16 @@ import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.domain.user.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.groups.Tuple;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +46,19 @@ public class OrderStatisticsFacadeIntegrationTest {
 
     @Autowired
     private OrderItemRepository orderItemRepository;
+
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+
+    @AfterEach
+    void tearDown() {
+        redisTemplate.getConnectionFactory().getConnection().flushAll();
+    }
+
+    @BeforeEach
+    void setUp() {
+        redisTemplate.getConnectionFactory().getConnection().flushAll();
+    }
 
     @Test
     void 날짜에_해당하는_상품_판매_통계를_생성한다() {
@@ -75,4 +92,32 @@ public class OrderStatisticsFacadeIntegrationTest {
                 Tuple.tuple(savedProduct2.getId(), 3, statisticDate)
             );
     }
+
+    @Test
+    void 레디스를_이용해서_날짜에_해당되는_통계를_생성한다() {
+        // given
+        LocalDate statisticDate = LocalDate.now();
+        OrderStatisticsCriteria.GenerateStatisticsByDate criteria = OrderStatisticsCriteria.GenerateStatisticsByDate.of(statisticDate);
+
+        Long productId = 1L;
+        Integer orderQuantity = 3;
+
+        String key = "PRODUCT:DAILY:" + statisticDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        String value = productId.toString();
+
+        redisTemplate.opsForZSet().incrementScore(key, value, orderQuantity.intValue());
+        // when
+        orderStatisticsFacade.generateStatisticsByDateWithRedis(criteria);
+
+        // then
+        List<OrderStatistics> orderStatistics = orderStatisticsRepository.findByStatisticDate(statisticDate);
+
+        Assertions.assertThat(orderStatistics)
+            .hasSize(1)
+            .extracting(OrderStatistics::getProductId, OrderStatistics::getSoldQuantity, OrderStatistics::getStatisticDate)
+            .containsExactlyInAnyOrder(
+                Tuple.tuple(productId, orderQuantity, statisticDate)
+            );
+    }
+
 }

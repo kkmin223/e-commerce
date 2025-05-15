@@ -102,5 +102,5 @@ public interface ProductApi {
             )
         )
     })
-    ResponseEntity<ApiResult<List<ProductResponse.Product>>> listPopularProduct();
+    ResponseEntity<ApiResult<List<ProductResponse.ProductRanking>>> listPopularProduct();
 }

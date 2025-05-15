@@ -31,7 +31,17 @@ public class OrderStatistics {
         this.soldQuantity = soldQuantity;
     }
 
+    private OrderStatistics(LocalDate statisticDate, Long productId, Integer soldQuantity) {
+        this.statisticDate = statisticDate;
+        this.productId = productId;
+        this.soldQuantity = soldQuantity;
+    }
+
     public static OrderStatistics of(LocalDate statisticDate, Product product, Integer soldQuantity) {
         return new OrderStatistics(statisticDate, product, soldQuantity);
+    }
+
+    public static OrderStatistics of(LocalDate statisticDate, Long productId, Integer soldQuantity) {
+        return new OrderStatistics(statisticDate, productId, soldQuantity);
     }
 }
