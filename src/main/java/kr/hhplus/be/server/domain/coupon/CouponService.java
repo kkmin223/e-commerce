@@ -5,6 +5,9 @@ import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Set;
+
 @RequiredArgsConstructor
 @Service
 public class CouponService {
@@ -27,4 +30,23 @@ public class CouponService {
         return coupon;
     }
 
+    public void requestCoupon(CouponCommand.Request command) {
+        couponRepository.requestCoupon(command.getCouponId(), command.getUserId(), command.getIssuedAt());
+    }
+
+    public Set<String> getIssueRequest(CouponCommand.GetIssueRequest command) {
+        return couponRepository.getIssueRequest(command.getCouponId(), command.getIssueQuantity());
+    }
+
+    public List<Coupon> getAllIssuableCoupons() {
+        return couponRepository.getAllIssuableCoupons();
+    }
+
+    public void deleteIssueRequest(CouponCommand.DeleteIssueRequest command) {
+        couponRepository.deleteIssueRequest(command.getCouponId(), command.getUserId());
+    }
+
+    public boolean isDuplicatedUser(CouponCommand.IsDuplicatedUser command) {
+        return couponRepository.isDuplicatedUser(command.getCouponId(), command.getUserId());
+    }
 }

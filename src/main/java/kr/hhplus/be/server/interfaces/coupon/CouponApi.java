@@ -63,4 +63,49 @@ public interface CouponApi {
         @RequestBody
         @Valid
         CouponRequest.Issue couponIssueRequest);
+
+    @Operation(
+        summary = "선착순 쿠폰 발급",
+        description = "선착순 쿠폰 발급을 요청합니다."
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "쿠폰 발급 성공",
+            useReturnTypeSchema = true
+        ),
+        @ApiResponse(
+            responseCode = "400",
+            description = "Request 유효성 에러",
+            content = @Content(
+                schema = @Schema(implementation = ErrorResult.class),
+                mediaType = "application/json"
+            )
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "존재하지 않는 리소스 접근",
+            content = @Content(
+                schema = @Schema(implementation = ErrorResult.class),
+                mediaType = "application/json"
+            )
+        ),
+        @ApiResponse(
+            responseCode = "500",
+            description = "서버 오류",
+            content = @Content(
+                schema = @Schema(implementation = ErrorResult.class),
+                mediaType = "application/json"
+            )
+        )
+    })
+    ResponseEntity<ApiResult<String>> requestCoupon(
+        @Parameter(
+            description = "쿠폰 식별자",
+            example = "1"
+        )
+        @Min(value = 1, message = "쿠폰 식별자가 유효하지 않습니다.") long id,
+        @RequestBody
+        @Valid
+        CouponRequest.Request request);
 }

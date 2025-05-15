@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class ProductCommand {
@@ -53,6 +54,30 @@ public class ProductCommand {
 
         public static FindTopSellingProduct of(List<Long> productIds) {
             return new FindTopSellingProduct(productIds);
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class GetProductSalesInfo {
+        private LocalDate searchDate;
+
+        public static GetProductSalesInfo of(LocalDate searchDate) {
+            return new GetProductSalesInfo(searchDate);
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class GetTopProduct {
+        private LocalDate startDate;
+        private LocalDate endDate;
+        private int rankCount;
+
+        public static GetTopProduct of(LocalDate startDate, LocalDate endDate, int rankCount) {
+            return new GetTopProduct(startDate, endDate, rankCount);
         }
     }
 }
