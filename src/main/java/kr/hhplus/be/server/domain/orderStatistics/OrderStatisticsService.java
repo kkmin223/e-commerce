@@ -2,6 +2,7 @@ package kr.hhplus.be.server.domain.orderStatistics;
 
 import kr.hhplus.be.server.domain.orderItem.OrderItem;
 import kr.hhplus.be.server.domain.product.Product;
+import kr.hhplus.be.server.domain.product.ProductInfo;
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
 import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,21 @@ public class OrderStatisticsService {
             Integer soldQuantity = entry.getValue();
 
             OrderStatistics orderStatistics = OrderStatistics.of(command.getStatisticDate(), product, soldQuantity);
+            statisticsList.add(orderStatistics);
+        }
+
+        orderStatisticsRepository.saveAll(statisticsList);
+    }
+
+    public void generateDailyStatisticsWithRedis(OrderStatisticsCommand.GenerateDailyStatisticsWithRedis command) {
+
+        if (command.getStatisticDate() == null) {
+            throw new BusinessLogicException(ErrorCode.INVALID_DATE);
+        }
+
+        List<OrderStatistics> statisticsList = new ArrayList<>();
+        for (ProductInfo.ProductSalesInfo productSalesInfo : command.getProductSalesInfos()) {
+            OrderStatistics orderStatistics = OrderStatistics.of(command.getStatisticDate(), productSalesInfo.getProductId(), productSalesInfo.getQuantity());
             statisticsList.add(orderStatistics);
         }
 

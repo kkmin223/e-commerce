@@ -21,9 +21,8 @@ public class StatisticsScheduler {
     private final CacheManager cacheManager;
 
     /**
-     * 매일 00시 10분에 전날의 통계 데이터를 생성
+     * 매일 00시 10분에 전날의 통계 데이터를 생성 -> 미사용
      */
-    @Scheduled(cron = "0 10 0 * * *")
     public void generateDailyOrderStatistics() {
         // 1. 전날의 통계 생성
         LocalDate today = LocalDate.now();
@@ -41,5 +40,15 @@ public class StatisticsScheduler {
         OrderStatisticsCommand.GetTopSellingProductIds command = OrderStatisticsCommand.GetTopSellingProductIds.of(5, today.minusDays(3), today);
         orderStatisticsService.getTopSellingProductIds(command);
 
+    }
+
+    /**
+     * 매일 00시 10분에 전날의 통계 데이터를 생성
+     */
+    @Scheduled(cron = "0 10 0 * * *")
+    public void generateStatisticsByDateWithRedis() {
+        LocalDate today = LocalDate.now();
+        LocalDate targetDate = today.minusDays(1); // 어제
+        orderStatisticsFacade.generateStatisticsByDateWithRedis(OrderStatisticsCriteria.GenerateStatisticsByDate.of(targetDate));
     }
 }
