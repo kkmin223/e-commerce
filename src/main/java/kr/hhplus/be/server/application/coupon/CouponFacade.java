@@ -12,8 +12,13 @@ import kr.hhplus.be.server.domain.user.UserCommand;
 import kr.hhplus.be.server.domain.user.UserService;
 import kr.hhplus.be.server.lock.aop.DistributedLock;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Set;
+
+@Slf4j
 @RequiredArgsConstructor
 @Facade
 public class CouponFacade {
@@ -33,5 +38,40 @@ public class CouponFacade {
         CouponItem couponItem = couponItemService.issueCouponItem(CouponItemCommand.Issue.of(issuableCoupon, user));
 
         return CouponResult.Issue.of(couponItem.getId(), issuableCoupon.getTitle(), couponItem.getIsUsed(), issuableCoupon.getDiscountLabel(), issuableCoupon.getCouponType());
+    }
+
+    public void requestCoupon(CouponCriteria.Request criteria) {
+        User user = userService.getUser(UserCommand.Get.of(criteria.getUserId()));
+        Coupon issuableCoupon = couponService.getIssuableCoupon(CouponCommand.Get.of(criteria.getCouponId()));
+
+        couponService.requestCoupon(CouponCommand.Request.of(issuableCoupon.getId(), user.getId(), criteria.getIssuedAt()));
+    }
+
+    @Transactional
+    public void processCouponRequest(CouponCriteria.Process criteria) {
+        List<Coupon> allIssuableCoupons = couponService.getAllIssuableCoupons();
+
+        for (Coupon coupon : allIssuableCoupons) {
+            if (!coupon.canIssue()) {
+                continue;
+            }
+
+            int issueQuantity = Math.min(criteria.getIssueQuantity(), coupon.getRemainingQuantity());
+
+            Set<String> issueUserIds = couponService.getIssueRequest(CouponCommand.GetIssueRequest.of(coupon.getId(), issueQuantity));
+            for (String userId : issueUserIds) {
+                if (couponService.isDuplicatedUser(CouponCommand.IsDuplicatedUser.of(coupon.getId(), Long.valueOf(userId)))) {
+                    continue;
+                }
+
+                try {
+                    User user = userService.getUser(UserCommand.Get.of(Long.valueOf(userId)));
+                    couponItemService.issueCouponItem(CouponItemCommand.Issue.of(coupon, user));
+                    couponService.deleteIssueRequest(CouponCommand.DeleteIssueRequest.of(coupon.getId(), Long.valueOf(userId)));
+                } catch (Exception e) {
+                    log.error("쿠폰 발급 실패:{}", e.getMessage());
+                }
+            }
+        }
     }
 }
