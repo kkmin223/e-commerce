@@ -2,9 +2,11 @@ package kr.hhplus.be.server.domain.orderStatistics;
 
 import kr.hhplus.be.server.domain.orderItem.OrderItem;
 import kr.hhplus.be.server.domain.product.Product;
+import kr.hhplus.be.server.domain.product.ProductInfo;
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
 import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -43,6 +45,22 @@ public class OrderStatisticsService {
         orderStatisticsRepository.saveAll(statisticsList);
     }
 
+    public void generateDailyStatisticsWithRedis(OrderStatisticsCommand.GenerateDailyStatisticsWithRedis command) {
+
+        if (command.getStatisticDate() == null) {
+            throw new BusinessLogicException(ErrorCode.INVALID_DATE);
+        }
+
+        List<OrderStatistics> statisticsList = new ArrayList<>();
+        for (ProductInfo.ProductSalesInfo productSalesInfo : command.getProductSalesInfos()) {
+            OrderStatistics orderStatistics = OrderStatistics.of(command.getStatisticDate(), productSalesInfo.getProductId(), productSalesInfo.getQuantity());
+            statisticsList.add(orderStatistics);
+        }
+
+        orderStatisticsRepository.saveAll(statisticsList);
+    }
+
+    @Cacheable(value = "TopSellingProductIds", key = "{#command.startDate, #command.endDate, #command.count}")
     public List<Long> getTopSellingProductIds(OrderStatisticsCommand.GetTopSellingProductIds command) {
         if (command.getCount() <= 0) {
             throw new BusinessLogicException(ErrorCode.INVALID_GET_COUNT);

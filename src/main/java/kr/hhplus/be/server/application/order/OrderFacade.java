@@ -6,6 +6,7 @@ import kr.hhplus.be.server.domain.couponItem.CouponItemCommand;
 import kr.hhplus.be.server.domain.couponItem.CouponItemService;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderCommand;
+import kr.hhplus.be.server.domain.order.OrderEvent;
 import kr.hhplus.be.server.domain.order.OrderService;
 import kr.hhplus.be.server.domain.payment.Payment;
 import kr.hhplus.be.server.domain.payment.PaymentCommand;
@@ -19,6 +20,7 @@ import kr.hhplus.be.server.domain.user.UserService;
 import kr.hhplus.be.server.infrastructure.dataPlatform.DataPlatform;
 import kr.hhplus.be.server.lock.aop.DistributedLock;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
@@ -33,6 +35,7 @@ public class OrderFacade {
     private final ProductService productService;
     private final CouponItemService couponItemService;
     private final DataPlatform dataPlatform;
+    private final ApplicationEventPublisher eventPublisher;
 
     @DistributedLock(
         keys = "T(kr.hhplus.be.server.lock.LockKeyGenerator).generateForOrderAndPay(#criteria)"
@@ -47,13 +50,16 @@ public class OrderFacade {
         Order order = orderService.createOrder(OrderCommand.CreateOrder.of(user, productsWithQuantities, criteria.getOrderAt()));
 
         CouponItem couponItem = null;
-        if (criteria.getCouponItemId() != null) {
+        if (criteria.getCouponItemId() != null
+            && criteria.getCouponItemId() > 0) {
             couponItem = couponItemService.getCouponItem(CouponItemCommand.Get.of(criteria.getCouponItemId()));
         }
 
         Payment payment = paymentService.createAndProcess(PaymentCommand.CreateAndProcess.of(user, order, couponItem));
 
         dataPlatform.sendData(order);
+
+        eventPublisher.publishEvent(OrderEvent.of(order.getOrderAt().toLocalDate(), productsWithQuantities));
 
         return OrderResult.OrderAndPay.createdBy(order);
     }
