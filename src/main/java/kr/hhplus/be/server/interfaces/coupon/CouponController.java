@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @RestController
 @RequiredArgsConstructor
 @Validated
@@ -28,6 +30,15 @@ public class CouponController implements CouponApi {
             ApiResult.of(SuccessCode.ISSUE_COUPON,
                 CouponResponse.Coupon.of(issueResult.getId(), issueResult.getCouponName(), issueResult.getIsUsed(), issueResult.getDiscountLabel(), issueResult.getCouponType())
             )
+        );
+    }
+
+    @Override
+    public ResponseEntity<ApiResult<String>> requestCoupon(long id, CouponRequest.Request request) {
+        couponFacade.requestCoupon(CouponCriteria.Request.of(id, request.getUserId(), LocalDateTime.now()));
+
+        return ResponseEntity.ok(
+            ApiResult.of(SuccessCode.ISSUE_COUPON, "OK")
         );
     }
 }
