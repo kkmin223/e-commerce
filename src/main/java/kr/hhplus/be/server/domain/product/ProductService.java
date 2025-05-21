@@ -7,6 +7,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -112,5 +113,11 @@ public class ProductService {
         }
 
         return result;
+    }
+
+    public void increaseProductScore(ProductCommand.IncreaseProductScore command) {
+        for (ProductCommand.IncreaseProductScore.ProductQuantity productQuantity : command.getProductQuantities()) {
+            productRepository.incrementProductScore(command.getOrderAt(), productQuantity.getProductId(), productQuantity.getQuantity(), Duration.ofHours(24 * 3 + 2));
+        }
     }
 }
