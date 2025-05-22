@@ -28,4 +28,9 @@ public class OrderService {
 
         return savedOrder;
     }
+
+    public Order getOrder(Long orderId) {
+        return orderRepository.findById(orderId)
+            .orElseThrow(() -> new BusinessLogicException(ErrorCode.ORDER_NOT_FOUND));
+    }
 }
