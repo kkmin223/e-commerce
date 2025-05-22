@@ -10,12 +10,12 @@
 
 #### 1.2 배포 단위
 
-| 서비스명            | 포함 도메인         | 분리 근거                     |
-|-----------------|----------------|---------------------------|
-| User Service    | User           | 독립적인 회원 정보 관리 주기          |
-| Product Service | Product        | 상품 정보 변경 주기가 주문과 무관       |
-| Coupon Service  | Coupon         | 쿠폰 발급/사용 주기 독립성           |
-| Order Service   | Order, Payment | 주문 생성 → 결제 처리의 강한 트랜잭션 결합 |
+| 서비스명          | 포함 도메인         | 분리 근거                     |
+|---------------|----------------|---------------------------|
+| User          | User           | 독립적인 회원 정보 관리 주기          |
+| Product       | Product        | 상품 정보 변경 주기가 주문과 무관       |
+| Coupon        | Coupon         | 쿠폰 발급/사용 주기 독립성           |
+| Order_Payment | Order, Payment | 주문 생성 → 결제 처리의 강한 트랜잭션 결합 |
 
 ### 2. **데이터 정합성 전략**
 
@@ -30,7 +30,7 @@
 |----------|------------------|-----------------|
 | 쿠폰 적용 실패 | 상품 수량 복구         | Product         |
 | 잔액 부족    | 상품 수량 복구 + 쿠폰 롤백 | Product, Coupon |
-| 시스템 장애   | 타임아웃 기반 자동 복구    | 전체              |
+
 
 ### 3. **주문-결제 흐름 개선안**
 
@@ -39,27 +39,31 @@
 ```mermaid
 sequenceDiagram
     participant Client
-    participant OrderService
-    participant UserService
-    participant ProductService
-    participant CouponService
-    participant AnalyticsService
+    participant Order_Payment
+    participant User
+    participant Product
+    participant Coupon
+    participant DataPlatform
     
-    Client->>OrderService: 주문 요청
-    OrderService->>UserService: 사용자 검증
-    OrderService->>ProductService: 재고 확인
-    OrderService->>OrderService: 주문 임시 저장
+    Client->>Order_Payment: 주문 요청
+    Order_Payment->>User: 사용자 검증
+    Order_Payment->>Product: 재고 차감
+    Order_Payment->>Order_Payment: 주문 임시 저장
     alt 쿠폰 사용
-        OrderService->>CouponService: 쿠폰 유효성 검사
+        Order_Payment->>Coupon: 쿠폰 사용
+        break 쿠폰이 유효하지 않을 경우
+            Order_Payment->>Product: 재고 롤백
+            Order_Payment->>Client: 주문 실패 반환
     end
-    OrderService->>UserService: 잔액 차감 시도
+    Order_Payment->>User: 잔액 차감
     alt 성공
-        OrderService->>ProductService: 재고 확정
-        OrderService->>CouponService: 쿠폰 사용 확정
-        OrderService->>AnalyticsService: 주문 데이터 전송
+		Order_Payment->>Client: 주문 성공 반환
+		Order_Payment->>Product: 판매상품 랭킹 최신화
+        Order_Payment->>DataPlatform: 주문 데이터 전송
     else 실패
-        OrderService->>ProductService: 재고 롤백
-        OrderService->>CouponService: 쿠폰 상태 롤백
+        Order_Payment->>Product: 재고 롤백
+        Order_Payment->>Coupon: 쿠폰 상태 롤백
+        Order_Payment->>Client: 주문 실패 반환
     end
 ```
 
