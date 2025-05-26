@@ -17,7 +17,6 @@ import kr.hhplus.be.server.domain.product.ProductService;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.domain.user.UserCommand;
 import kr.hhplus.be.server.domain.user.UserService;
-import kr.hhplus.be.server.infrastructure.dataPlatform.DataPlatform;
 import kr.hhplus.be.server.lock.aop.DistributedLock;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -34,7 +33,6 @@ public class OrderFacade {
     private final UserService userService;
     private final ProductService productService;
     private final CouponItemService couponItemService;
-    private final DataPlatform dataPlatform;
     private final ApplicationEventPublisher eventPublisher;
 
     @DistributedLock(
@@ -57,9 +55,7 @@ public class OrderFacade {
 
         Payment payment = paymentService.createAndProcess(PaymentCommand.CreateAndProcess.of(user, order, couponItem));
 
-        dataPlatform.sendData(order);
-
-        eventPublisher.publishEvent(OrderEvent.of(order.getOrderAt().toLocalDate(), productsWithQuantities));
+        eventPublisher.publishEvent(OrderEvent.of(order.getId()));
 
         return OrderResult.OrderAndPay.createdBy(order);
     }

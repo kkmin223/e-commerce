@@ -80,4 +80,28 @@ public class ProductCommand {
             return new GetTopProduct(startDate, endDate, rankCount);
         }
     }
+
+    @Getter
+    @NoArgsConstructor
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    public static class IncreaseProductScore {
+        private LocalDate orderAt;
+        private List<ProductQuantity> productQuantities;
+
+        public static IncreaseProductScore of(LocalDate orderAt, List<ProductQuantity> productQuantities) {
+            return new IncreaseProductScore(orderAt, productQuantities);
+        }
+
+        @Getter
+        @NoArgsConstructor
+        @AllArgsConstructor
+        public static class ProductQuantity {
+            private Long productId;
+            private Integer quantity;
+
+            public static ProductQuantity of(Long productId, Integer quantity) {
+                return new ProductQuantity(productId, quantity);
+            }
+        }
+    }
 }

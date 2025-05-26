@@ -11,7 +11,6 @@ import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.ProductService;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.domain.user.UserService;
-import kr.hhplus.be.server.infrastructure.dataPlatform.DataPlatform;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
@@ -43,8 +42,6 @@ class OrderFacadeTest {
     @Mock
     private CouponItemService couponItemService;
     @Mock
-    private DataPlatform dataPlatform;
-    @Mock
     private ApplicationEventPublisher eventPublisher;
 
     @Test
@@ -69,17 +66,15 @@ class OrderFacadeTest {
         Mockito.when(couponItemService.getCouponItem(any())).thenReturn(couponItem);
         Mockito.when(paymentService.createAndProcess(any())).thenReturn(payment);
 
-
         // when
         OrderResult.OrderAndPay result = orderFacade.orderAndPay(criteria);
 
         // then
-        InOrder inOrder = Mockito.inOrder(orderService, userService, productService, couponItemService, paymentService, dataPlatform);
+        InOrder inOrder = Mockito.inOrder(orderService, userService, productService, couponItemService, paymentService);
         inOrder.verify(userService).getUser(any());
         inOrder.verify(productService).findProductsWithQuantities(any());
         inOrder.verify(orderService).createOrder(any());
         inOrder.verify(couponItemService).getCouponItem(any());
         inOrder.verify(paymentService).createAndProcess(any());
-        inOrder.verify(dataPlatform).sendData(any());
     }
 }

@@ -1,16 +1,20 @@
 package kr.hhplus.be.server.domain.product;
 
+import org.assertj.core.api.Assertions;
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.groups.Tuple.tuple;
@@ -136,4 +140,25 @@ public class ProductServiceIntegrationTest {
             );
     }
 
+    @Test
+    void 상품_스코어를_증가시킨다() {
+        // given
+        LocalDate orderAt = LocalDate.now();
+        long productId = 1L;
+        int quantity = 3;
+        ProductCommand.IncreaseProductScore.ProductQuantity productQuantity = ProductCommand.IncreaseProductScore.ProductQuantity.of(productId, quantity);
+        ProductCommand.IncreaseProductScore command = ProductCommand.IncreaseProductScore.of(orderAt, List.of(productQuantity));
+
+        // when
+        productService.increaseProductScore(command);
+
+        // then
+        String value = String.valueOf(productId);
+        String key = "PRODUCT:DAILY:" + orderAt.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        Set<ZSetOperations.TypedTuple<String>> expectedTuple = redisTemplate.opsForZSet().reverseRangeWithScores(key, 0, -1);
+        Assertions.assertThat(expectedTuple)
+            .hasSize(1)
+            .extracting(ZSetOperations.TypedTuple::getValue, ZSetOperations.TypedTuple::getScore)
+            .containsExactly(Tuple.tuple(value, Double.valueOf(quantity)));
+    }
 }
