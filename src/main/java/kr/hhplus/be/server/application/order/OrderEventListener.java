@@ -7,6 +7,7 @@ import kr.hhplus.be.server.domain.product.ProductCommand;
 import kr.hhplus.be.server.domain.product.ProductService;
 import kr.hhplus.be.server.infrastructure.dataPlatform.DataPlatform;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -17,9 +18,9 @@ import java.util.List;
 @Component
 public class OrderEventListener {
 
-    private final DataPlatform dataPlatform;
     private final OrderService orderService;
     private final ProductService productService;
+    private final KafkaTemplate<String, OrderEvent> kafkaTemplate;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void handleOrderEvent(OrderEvent orderEvent) {
@@ -34,6 +35,6 @@ public class OrderEventListener {
             , productQuantities);
         productService.increaseProductScore(increaseProductScoreCommand);
 
-        dataPlatform.sendData(order);
+        kafkaTemplate.send("ORDER", "DATA_PLATFORM", orderEvent);
     }
 }
