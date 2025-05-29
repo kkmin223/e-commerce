@@ -3,6 +3,7 @@ package kr.hhplus.be.server.domain.coupon;
 import kr.hhplus.be.server.interfaces.common.ErrorCode;
 import kr.hhplus.be.server.interfaces.common.exceptions.BusinessLogicException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.Set;
 public class CouponService {
 
     private final CouponRepository couponRepository;
+    private final KafkaTemplate<String, CouponEvent> kafkaTemplate;
 
     public Coupon getIssuableCoupon(CouponCommand.Get command) {
         if (command.getCouponId() == null
@@ -48,5 +50,11 @@ public class CouponService {
 
     public boolean isDuplicatedUser(CouponCommand.IsDuplicatedUser command) {
         return couponRepository.isDuplicatedUser(command.getCouponId(), command.getUserId());
+    }
+
+    public void sendCouponEvent(CouponCommand.Request command) {
+        kafkaTemplate.send("COUPON"
+            , command.getCouponId().toString()
+            , CouponEvent.of(command.getCouponId(), command.getUserId()));
     }
 }
