@@ -54,7 +54,7 @@ public class CouponService {
 
     public void sendCouponEvent(CouponCommand.Request command) {
         kafkaTemplate.send("COUPON"
-            , command.getCouponId().toString()
+            , String.valueOf((command.getCouponId() % 3))
             , CouponEvent.of(command.getCouponId(), command.getUserId()));
     }
 }
