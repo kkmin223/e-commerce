@@ -38,9 +38,11 @@ spring:
       retries: 5
     consumer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         enable-auto-commit: false
+        spring.json.trusted.packages: "*"  # 모든 패키지 허용
+        partition.assignment.strategy: org.apache.kafka.clients.consumer.RoundRobinAssignor # 파티션 균등 분배
     listener:
       ack-mode: manual # 수동으로 커밋하겠다.
 
