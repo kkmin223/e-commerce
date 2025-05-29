@@ -10,7 +10,6 @@ import kr.hhplus.be.server.domain.couponItem.CouponItemService;
 import kr.hhplus.be.server.domain.user.User;
 import kr.hhplus.be.server.domain.user.UserCommand;
 import kr.hhplus.be.server.domain.user.UserService;
-import kr.hhplus.be.server.lock.aop.DistributedLock;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,9 +26,6 @@ public class CouponFacade {
     private final UserService userService;
     private final CouponItemService couponItemService;
 
-    @DistributedLock(
-        keys = "T(kr.hhplus.be.server.lock.LockKeyGenerator).generateForIssueCoupon(#criteria)"
-    )
     @Transactional
     public CouponResult.Issue IssueCoupon(CouponCriteria.Issue criteria) {
 
@@ -44,7 +40,7 @@ public class CouponFacade {
         User user = userService.getUser(UserCommand.Get.of(criteria.getUserId()));
         Coupon issuableCoupon = couponService.getIssuableCoupon(CouponCommand.Get.of(criteria.getCouponId()));
 
-        couponService.requestCoupon(CouponCommand.Request.of(issuableCoupon.getId(), user.getId(), criteria.getIssuedAt()));
+        couponService.sendCouponEvent(CouponCommand.Request.of(issuableCoupon.getId(), user.getId(), criteria.getIssuedAt()));
     }
 
     @Transactional

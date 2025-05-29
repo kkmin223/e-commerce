@@ -34,7 +34,8 @@ public class CouponController implements CouponApi {
     }
 
     @Override
-    public ResponseEntity<ApiResult<String>> requestCoupon(long id, CouponRequest.Request request) {
+    @PostMapping("/request/{id}")
+    public ResponseEntity<ApiResult<String>> requestCoupon(@PathVariable long id, @RequestBody CouponRequest.Request request) {
         couponFacade.requestCoupon(CouponCriteria.Request.of(id, request.getUserId(), LocalDateTime.now()));
 
         return ResponseEntity.ok(

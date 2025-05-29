@@ -46,8 +46,8 @@ dependencies {
 	// Cache
 	implementation("org.springframework.boot:spring-boot-starter-cache")
 
-	// Cache
-	implementation("org.springframework.boot:spring-boot-starter-cache")
+	// Kafka
+	implementation("org.springframework.kafka:spring-kafka")
 
 	// redis
 	implementation("org.redisson:redisson-spring-boot-starter:3.45.1")
@@ -66,6 +66,8 @@ dependencies {
 	testImplementation("org.testcontainers:mysql")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testImplementation("org.instancio:instancio-junit:5.4.0")
+	testImplementation("org.testcontainers:kafka:1.21.0")
+
 }
 
 tasks.withType<Test> {

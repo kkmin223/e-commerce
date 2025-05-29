@@ -7,9 +7,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class DataPlatform {
 
-    @Async("taskExecutor")
     public void sendData(Order order){
-        System.out.println("데이터 전송");
+        System.out.println(String.format("orderID:%d 데이터 전송", order.getId()));
         return;
     }
 }
